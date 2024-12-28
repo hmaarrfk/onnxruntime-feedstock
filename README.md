@@ -31,6 +31,24 @@ Package license: MIT AND BSL-1.0
 
 Summary: cross-platform, high performance ML inferencing and training accelerator
 
+About onnxruntime-novec-cpp
+---------------------------
+
+Home: https://github.com/microsoft/onnxruntime/
+
+Package license: MIT AND BSL-1.0
+
+Summary: cross-platform, high performance ML inferencing and training accelerator
+
+About onnxruntime-novec
+-----------------------
+
+Home: https://github.com/microsoft/onnxruntime/
+
+Package license: MIT AND BSL-1.0
+
+Summary: cross-platform, high performance ML inferencing and training accelerator
+
 Current build status
 ====================
 
@@ -49,6 +67,62 @@ Current build status
         <table>
           <thead><tr><th>Variant</th><th>Status</th></tr></thead>
           <tbody><tr>
+              <td>linux_64_c_compiler_version13cuda_compilerNonecuda_compiler_versionNonecxx_compiler_version13suffix</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=12634&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/onnxruntime-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_64_c_compiler_version13cuda_compilerNonecuda_compiler_versionNonecxx_compiler_version13suffix" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>linux_64_c_compiler_version13cuda_compilerNonecuda_compiler_versionNonecxx_compiler_version13suffix-novec</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=12634&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/onnxruntime-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_64_c_compiler_version13cuda_compilerNonecuda_compiler_versionNonecxx_compiler_version13suffix-novec" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>linux_64_c_compiler_version13cuda_compilercuda-nvcccuda_compiler_version12.6cxx_compiler_version13suffix</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=12634&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/onnxruntime-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_64_c_compiler_version13cuda_compilercuda-nvcccuda_compiler_version12.6cxx_compiler_version13suffix" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>linux_64_c_compiler_version13cuda_compilercuda-nvcccuda_compiler_version12.6cxx_compiler_version13suffix-novec</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=12634&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/onnxruntime-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_64_c_compiler_version13cuda_compilercuda-nvcccuda_compiler_version12.6cxx_compiler_version13suffix-novec" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>linux_aarch64_c_compiler_version13cuda_compilerNonecuda_compiler_versionNonecxx_compiler_version13suffix</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=12634&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/onnxruntime-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_aarch64_c_compiler_version13cuda_compilerNonecuda_compiler_versionNonecxx_compiler_version13suffix" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>linux_aarch64_c_compiler_version13cuda_compilerNonecuda_compiler_versionNonecxx_compiler_version13suffix-novec</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=12634&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/onnxruntime-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_aarch64_c_compiler_version13cuda_compilerNonecuda_compiler_versionNonecxx_compiler_version13suffix-novec" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>linux_aarch64_c_compiler_version13cuda_compilercuda-nvcccuda_compiler_version12.6cxx_compiler_version13suffix</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=12634&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/onnxruntime-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_aarch64_c_compiler_version13cuda_compilercuda-nvcccuda_compiler_version12.6cxx_compiler_version13suffix" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>linux_aarch64_c_compiler_version13cuda_compilercuda-nvcccuda_compiler_version12.6cxx_compiler_version13suffix-novec</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=12634&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/onnxruntime-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_aarch64_c_compiler_version13cuda_compilercuda-nvcccuda_compiler_version12.6cxx_compiler_version13suffix-novec" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
               <td>osx_64_suffix</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=12634&branchName=main">
