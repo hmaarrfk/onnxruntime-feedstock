@@ -2,7 +2,7 @@
 {% set build_ext = ("cuda" ~ cuda_compiler_version).replace(".", "") if cuda_enabled else "cpu" %}
 {% set version = "1.26.0" %}
 {% set suffix = "" %}  # [suffix == None]
-{% set build = 0 %}
+{% set build = 1 %}
 
 {% if cuda_enabled %}
 {% set build = build + 200 %}
@@ -44,6 +44,15 @@ build:
   string: py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}
   ignore_run_exports_from:
     - zlib
+    # Keep OpenVINO a *soft* dependency: the OpenVINO EP is a separately
+    # loadable libonnxruntime_providers_openvino.so, so onnxruntime must not
+    # hard-depend on OpenVINO. Drop the (strong) run_exports that libopenvino-dev
+    # and the linked OpenVINO libs would otherwise inject; compatibility is
+    # expressed via run_constrained below instead.
+    - libopenvino-dev            # [linux64]
+    - libopenvino                # [linux64]
+    - libopenvino-onnx-frontend  # [linux64]
+    - libopenvino-ir-frontend    # [linux64]
   # This needs to be coherent with the entry_points list defined around
   # https://github.com/microsoft/onnxruntime/blob/main/setup.py#L735
   entry_points:
@@ -91,6 +100,12 @@ requirements:
     # Used by the CoreML execution provider to build mlpackage models;
     # onnxruntime finds it via find_package, so prefer the conda-forge build.
     - nlohmann_json  # [osx and arm64]
+    # OpenVINO execution provider (Intel CPU/iGPU/NPU), Linux x86_64 only.
+    # libopenvino-dev provides the OpenVINO CMake config consumed by
+    # find_package(OpenVINO REQUIRED COMPONENTS Runtime ONNX) and pulls in the
+    # onnx frontend + every device plugin at build time. ORT 1.26 validates
+    # against OpenVINO 2025.3-2026.1.
+    - libopenvino-dev  # [linux64]
     - zlib
     - numpy
     - pybind11
@@ -103,6 +118,16 @@ requirements:
     - __cuda                                    # [cuda_compiler_version != "None"]
   run_constrained:
     - onnxruntime <0a0  # [suffix == "-novec"]
+    # OpenVINO execution provider (Intel CPU/iGPU/NPU), Linux x86_64 only.
+    # OpenVINO is a *soft* dependency: it is not installed by default, but when a
+    # user installs a compatible OpenVINO the OpenVINO EP picks it up. The OVEP
+    # links libopenvino / libopenvino-onnx-frontend and dlopen's the device
+    # plugins at runtime; every OpenVINO frontend and device plugin depends on an
+    # exact libopenvino build, so constraining libopenvino alone transitively
+    # pins them all to the version onnxruntime was built against. pin_compatible
+    # mirrors OpenVINO's own (patch-level) run_exports pin, e.g.
+    # ">=2026.1.0,<2026.1.1.0a0".
+    - {{ pin_compatible('libopenvino', min_pin='x.x.x', max_pin='x.x.x') }}  # [linux64]
 
 test:
   imports:
@@ -112,6 +137,8 @@ test:
     - onnxruntime_test --help
     # The CoreML execution provider is built into onnxruntime on Apple Silicon.
     - python -c "import onnxruntime as ort; assert 'CoreMLExecutionProvider' in ort.get_available_providers(), ort.get_available_providers()"  # [osx and arm64]
+    # The OpenVINO execution provider is built into onnxruntime on Linux x86_64.
+    - python -c "import onnxruntime as ort; assert 'OpenVINOExecutionProvider' in ort.get_available_providers(), ort.get_available_providers()"  # [linux64]
   requires:
     - pip
     # 2024/05 hmaarrfk/jtilly
