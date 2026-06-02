@@ -74,9 +74,22 @@ requirements:
     {% endif %}
     - cmake <4
     - ninja
-    # we need protoc in the build environment for cross compilations
-    - libprotobuf 3.21
+    # we need protoc in the build environment for cross compilations.
+    # On linux-64 the OpenVINO EP pulls libopenvino-onnx-frontend into the host
+    # prefix, which hard-pins the conda libprotobuf it was built against; the
+    # build protoc and onnxruntime's vendored onnx must use that *same* protobuf
+    # or the host headers shadow the vendored ones and onnx fails to compile
+    # ("onnx::ModelProto is incomplete type"). OpenVINO 2026.1 is on libprotobuf
+    # 6.33 while the conda-forge global pin has already moved to 7.x, so pin to
+    # OpenVINO's 6.33 here (bump when OpenVINO migrates). onnxruntime 1.26 /
+    # onnx 1.21 build fine on protobuf 6.x -- the only removed API
+    # (RepeatedPtrField::ReleaseCleared) is guarded for >=5.26.
+    - libprotobuf 3.21    # [not linux64]
+    - libprotobuf 6.33.*  # [linux64]
   host:
+    # Match the build protoc on linux-64 (see the build libprotobuf note above)
+    # so the vendored onnx headers are not shadowed by a different protobuf.
+    - libprotobuf 6.33.*  # [linux64]
     - python
     - pip
     - setuptools
@@ -200,13 +213,16 @@ about:
   license: MIT AND BSL-1.0 AND BSD-3-Clause  # [osx and arm64]        # mp11 is BSL 1.0, coremltools is BSD-3-Clause
   license_file:
     - LICENSE
-    - build-ci/Release/_deps/abseil_cpp-src/LICENSE
+    # On linux-64 protobuf (and its abseil dependency) come from the conda
+    # libprotobuf 6.x packages instead of being vendored, so these _deps source
+    # trees do not exist there; their licenses ship with libprotobuf/libabseil.
+    - build-ci/Release/_deps/abseil_cpp-src/LICENSE        # [not linux64]
     - build-ci/Release/_deps/eigen3-src/COPYING.MPL2
     - build-ci/Release/_deps/flatbuffers-src/LICENSE
     - build-ci/Release/_deps/gsl-src/LICENSE
     - build-ci/Release/_deps/nlohmann_json-src/LICENSE.MIT  # [not unix]
     - build-ci/Release/_deps/onnx-src/LICENSE
-    - build-ci/Release/_deps/protobuf-src/LICENSE
+    - build-ci/Release/_deps/protobuf-src/LICENSE          # [not linux64]
     - build-ci/Release/_deps/pytorch_cpuinfo-src/LICENSE
     - build-ci/Release/_deps/re2-src/LICENSE
     - build-ci/Release/_deps/safeint-src/LICENSE
