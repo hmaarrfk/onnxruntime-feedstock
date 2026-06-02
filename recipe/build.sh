@@ -45,6 +45,17 @@ if [[ "${target_platform}" == "linux-64" || "${target_platform}" == "linux-aarch
     LDFLAGS+=" -Wl,-z,noexecstack"
 fi
 
+if [[ "${target_platform}" == "linux-64" ]]; then
+    # Enable the OpenVINO execution provider for Intel CPU / iGPU / NPU.
+    # onnxruntime locates OpenVINO via find_package(OpenVINO REQUIRED COMPONENTS
+    # Runtime ONNX), satisfied by the conda libopenvino-dev package on
+    # CMAKE_PREFIX_PATH (=$PREFIX). The "CPU" argument only sets the *default*
+    # device; the resulting libonnxruntime_providers_openvino.so is a separately
+    # loadable module and the device is chosen at runtime via
+    # provider_options={"device_type": "CPU"|"GPU"|"NPU"|"AUTO:GPU,CPU"|...}.
+    BUILD_ARGS="${BUILD_ARGS} --use_openvino CPU"
+fi
+
 cmake_extra_defines=( "EIGEN_MPL2_ONLY=ON" \
                       "FLATBUFFERS_BUILD_FLATC=OFF" \
                       "onnxruntime_DONT_VECTORIZE=$DONT_VECTORIZE" \
