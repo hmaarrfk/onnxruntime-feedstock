@@ -20,6 +20,16 @@ if "%cuda_compiler_version%"=="None" (
     )
 )
 
+:: onnxruntime is built against the conda-forge flatbuffers instead of the
+:: vendored copy. The flatbuffers schema headers checked into the source tree
+:: carry a static_assert pinning them to flatbuffers 23.5.26, so regenerate
+:: them with the conda flatc to match the conda flatbuffers headers (mirrors
+:: the matching block in build.sh).
+python onnxruntime\core\flatbuffers\schema\compile_schema.py --flatc %BUILD_PREFIX%\Library\bin\flatc.exe --language cpp
+if errorlevel 1 exit 1
+python onnxruntime\lora\adapter_format\compile_schema.py --flatc %BUILD_PREFIX%\Library\bin\flatc.exe
+if errorlevel 1 exit 1
+
 :: We set CMAKE_DISABLE_FIND_PACKAGE_Protobuf=ON as currently we do not want to use
 :: protobuf from conda-forge, see https://github.com/conda-forge/onnxruntime-feedstock/issues/57#issuecomment-1518033552
 python tools/ci_build/build.py ^

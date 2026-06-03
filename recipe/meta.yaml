@@ -2,7 +2,7 @@
 {% set build_ext = ("cuda" ~ cuda_compiler_version).replace(".", "") if cuda_enabled else "cpu" %}
 {% set version = "1.26.0" %}
 {% set suffix = "" %}  # [suffix == None]
-{% set build = 0 %}
+{% set build = 1 %}
 
 {% if cuda_enabled %}
 {% set build = build + 200 %}
@@ -67,6 +67,9 @@ requirements:
     - ninja
     # we need protoc in the build environment for cross compilations
     - libprotobuf 3.21
+    # flatc (from flatbuffers) regenerates the schema headers in build.sh /
+    # bld.bat and must run on the build platform when cross compiling
+    - flatbuffers
   host:
     - python
     - pip
@@ -85,6 +88,10 @@ requirements:
     - flake8
     - gmock
     - libdate
+    # flatbuffers is statically linked into libonnxruntime (no run dependency);
+    # it is here so onnxruntime finds its headers and CMake package, and so the
+    # schema headers can be regenerated with the conda flatc (see build.sh).
+    - flatbuffers
     - packaging
     - python-flatbuffers
     - optional-lite
@@ -175,7 +182,6 @@ about:
     - LICENSE
     - build-ci/Release/_deps/abseil_cpp-src/LICENSE
     - build-ci/Release/_deps/eigen3-src/COPYING.MPL2
-    - build-ci/Release/_deps/flatbuffers-src/LICENSE
     - build-ci/Release/_deps/gsl-src/LICENSE
     - build-ci/Release/_deps/nlohmann_json-src/LICENSE.MIT  # [not unix]
     - build-ci/Release/_deps/onnx-src/LICENSE
