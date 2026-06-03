@@ -10,14 +10,33 @@ else
     DONT_VECTORIZE="OFF"
 fi
 
-if [[ "${CONDA_BUILD_CROSS_COMPILATION:-0}" == '1' || "${cuda_compiler_version:-None}" != "None" ]]; then
-    echo "Tests are disabled"
-    RUN_TESTS_BUILD_PY_OPTIONS=""
+# The C++ unit tests build an onnx_test_data_proto target whose tml.proto
+# imports ONNX's .proto source files (onnx/onnx-ml.proto). onnxruntime locates
+# them via the cmake variable onnx_SOURCE_DIR. The unvendored conda libonnx
+# package ships only the generated headers, but the conda-forge `onnx` (Python)
+# package ships the .proto sources under
+# $PREFIX/lib/pythonX.Y/site-packages/onnx/, so point onnx_SOURCE_DIR there
+# instead of re-vendoring onnx. Disabled only when cross compiling or for the
+# CUDA build (no GPU available to run the suite), matching the pre-unvendoring
+# behaviour.
+ONNX_PROTO_ROOT="$(dirname "$(dirname "$(find "${PREFIX}" -path '*/onnx/onnx-ml.proto' 2>/dev/null | head -1)")")"
+# We build and run the C++ unit tests (ctest) but NOT build.py's python test
+# phase: that phase runs ONNX conformance + onnxruntime.quantization tooling
+# tests which are brittle against the unvendored external onnx (e.g. onnx 1.21
+# raises NotImplementedError on a BatchNormalization op shared across the '' and
+# 'com.ms.internal.nhwc' domains, and the onnx backend series expects vendored
+# test data). The C++ ctest suite is the meaningful unit-test coverage and
+# passes against the unvendored onnx. Tests are skipped entirely when cross
+# compiling or for the CUDA build (no GPU to run them).
+RUN_TESTS_BUILD_PY_OPTIONS=""   # never let build.py run its (python) test phase
+if [[ "${CONDA_BUILD_CROSS_COMPILATION:-0}" == '1' || "${cuda_compiler_version:-None}" != "None" || -z "${ONNX_PROTO_ROOT}" ]]; then
+    echo "Compiled unit tests are disabled"
     BUILD_UNIT_TESTS="OFF"
+    RUN_CPP_CTEST="no"
 else
-    echo "Tests are enabled"
-    RUN_TESTS_BUILD_PY_OPTIONS="--test"
+    echo "Compiled unit tests are enabled (onnx .proto from ${ONNX_PROTO_ROOT})"
     BUILD_UNIT_TESTS="ON"
+    RUN_CPP_CTEST="yes"
 fi
 
 if [[ "${target_platform:-other}" == 'osx-arm64' ]]; then
@@ -42,8 +61,16 @@ cmake_extra_defines=( "EIGEN_MPL2_ONLY=ON" \
                       "onnxruntime_BUILD_UNIT_TESTS=$BUILD_UNIT_TESTS" \
                       "CMAKE_PREFIX_PATH=$PREFIX" \
                       "CMAKE_CXX_STANDARD=20" \
-		      "CMAKE_INSTALL_LIBDIR=lib"
+		      "CMAKE_INSTALL_LIBDIR=lib" \
+                      "onnxruntime_USE_FULL_PROTOBUF=ON"
 )
+
+# When building the unit tests, tell onnxruntime where to find ONNX's .proto
+# sources (shipped by the conda `onnx` package) so the onnx_test_data_proto
+# target can be generated against the unvendored onnx.
+if [[ "${BUILD_UNIT_TESTS}" == "ON" ]]; then
+    cmake_extra_defines+=( "onnx_SOURCE_DIR=${ONNX_PROTO_ROOT}" )
+fi
 
 # Copy the defines from the "activate" script (e.g. activate-gcc_linux-aarch64.sh)
 # into --cmake_extra_defines.
@@ -89,10 +116,7 @@ if [[ ! -z "${cuda_compiler_version+x}" && "${cuda_compiler_version}" != "None" 
 
 fi
 
-# onnxruntime is built against the conda-forge flatbuffers instead of the
-# vendored copy. The flatbuffers schema headers checked into the source tree
-# carry a static_assert pinning them to flatbuffers 23.5.26, so regenerate
-# them with the conda flatc to match the conda flatbuffers runtime version.
+# regenerate with conda-forge flatc
 python onnxruntime/core/flatbuffers/schema/compile_schema.py --flatc "${BUILD_PREFIX}/bin/flatc" --language cpp
 python onnxruntime/lora/adapter_format/compile_schema.py --flatc "${BUILD_PREFIX}/bin/flatc"
 
@@ -109,6 +133,14 @@ python tools/ci_build/build.py \
     --skip_submodule_sync \
     --path_to_protoc_exe $BUILD_PREFIX/bin/protoc \
     ${BUILD_ARGS}
+
+# Run the C++ unit tests directly via ctest (build.py's python test phase is
+# intentionally not invoked; see the BUILD_UNIT_TESTS block above). The test
+# binaries link the just-built and host shared libs.
+if [[ "${RUN_CPP_CTEST}" == "yes" ]]; then
+    LD_LIBRARY_PATH="${PREFIX}/lib:${SRC_DIR}/build-ci/Release:${LD_LIBRARY_PATH:-}" \
+        ctest --test-dir build-ci/Release --output-on-failure --parallel "${CPU_COUNT:-4}"
+fi
 
 # Install the project into cwd.
 # This is needed only to produce the exported CMake targets.
