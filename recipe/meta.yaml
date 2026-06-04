@@ -2,7 +2,7 @@
 {% set build_ext = ("cuda" ~ cuda_compiler_version).replace(".", "") if cuda_enabled else "cpu" %}
 {% set version = "1.26.0" %}
 {% set suffix = "" %}  # [suffix == None]
-{% set build = 1 %}
+{% set build = 2 %}
 
 {% if cuda_enabled %}
 {% set build = build + 200 %}
@@ -114,9 +114,10 @@ requirements:
     # so it shares the onnx-ml.proto descriptors with onnxruntime; an onnx that
     # statically embeds its own onnx registers onnx-ml.proto twice and aborts.
     # conda-forge's onnx gains shared-libonnx linkage with the libonnx split
-    # (onnx-feedstock PR #146, build >=1). TEMPORARY: drop the `*_1` build pin
-    # once that lands on conda-forge (conda-forge's current onnx is build 0).
-    - onnx 1.21.0 *_1
+    # (onnx-feedstock PR #146). Until that lands on conda-forge, the mark.harfouche
+    # channel (channel_sources, conda_build_config.yaml) supplies the shared-libonnx
+    # onnx; both are TEMPORARY testing aids to drop before merge.
+    - onnx
     - re2
     - flatbuffers
     - packaging
@@ -154,6 +155,8 @@ requirements:
 test:
   imports:
     - onnxruntime
+  files:
+    - test_openvino_ep.py
   commands:
     - pip check
     - onnxruntime_test --help
@@ -163,6 +166,12 @@ test:
     # It is advertised even without OpenVINO installed (the provider library is
     # loaded lazily only when an OpenVINO session is created).
     - python -c "import onnxruntime as ort; assert 'OpenVINOExecutionProvider' in ort.get_available_providers(), ort.get_available_providers()"  # [linux64]
+    # Regression guard: actually CONSTRUCT an OpenVINO EP session (with OpenVINO
+    # installed) so the OpenVINO libraries are loaded in-process alongside
+    # onnxruntime's ONNX/protobuf. This catches the onnx-ml.proto protobuf
+    # descriptor double-registration crash that the lazy provider-advertisement
+    # check above does not. See test_openvino_ep.py.
+    - python test_openvino_ep.py  # [linux64]
   requires:
     - pip
     # 2024/05 hmaarrfk/jtilly
@@ -170,6 +179,15 @@ test:
     # which was included in the requirements file for
     # build time compatibility
     - numpy 1.26.*   # [py == 312]
+    # OpenVINO EP regression guard (test_openvino_ep.py): pull the same
+    # OpenVINO this package was built against so constructing a session loads
+    # libopenvino + libopenvino-onnx-frontend in-process. onnx provides the
+    # helper used to build the tiny test model.
+    - libopenvino-dev {{ libopenvino_dev }}            # [linux64]
+    - libopenvino-onnx-frontend {{ libopenvino_dev }}  # [linux64]
+    - libopenvino-ir-frontend {{ libopenvino_dev }}    # [linux64]
+    - onnx                                             # [linux64]
+    - numpy                                            # [linux64]
 
 outputs:
   - name: onnxruntime{{ suffix }}
