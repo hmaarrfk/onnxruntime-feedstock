@@ -63,7 +63,7 @@ if [[ ! -z "${cuda_compiler_version+x}" && "${cuda_compiler_version}" != "None" 
             export CUDA_ARCH_LIST="70-real;75-real;80-real;86-real;89-real;90-real;100-real;120"
             ;;
 	13.0)
-            export CUDA_ARCH_LIST="75-real;80-real;86-real;89-real;90-real;100-real;120"
+            export CUDA_ARCH_LIST="75-real;80-real;86-real;89-real;90-real;100-real;110-real;120"
             ;;
 	*)
             echo "No CUDA architecture list exists for CUDA v${cuda_compiler_version}. See build.sh for information on adding one."
