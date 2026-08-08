@@ -33,6 +33,11 @@ source:
     - patches/0004-Remove-redundant-include-paths-from-custom-op-test-t.patch
     # Upstream is actually compatible with 3.10
     - patches/0005-Lower-python_require-to-3.10.patch
+    # New test in 1.28.0 lacks the skip guard its siblings have when onnx is absent
+    - patches/0006-Skip-adapter-string-tensor-test-without-onnx.patch
+    # autoep test gained a module-level onnx import in 1.28.0 but runs before
+    # build.py's "onnx is not installed" gate
+    - patches/0007-Guard-onnx-import-in-autoep-test.patch
 
 build:
   number: {{ build }}
