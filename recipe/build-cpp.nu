@@ -31,7 +31,9 @@ let forwarded_cmake_args = ($env.CMAKE_ARGS | split row " ")
 let prefix_path = if $is_win { $env.LIBRARY_PREFIX } else { $env.PREFIX }
 mut cmake_defines = ($forwarded_cmake_args | append [
     $"-DCMAKE_PREFIX_PATH=($prefix_path)"
-    "-DCMAKE_CXX_STANDARD=17"
+    # 1.28.0 requires C++20; the C++20 module-scanning issues that once forced
+    # 17 are handled upstream via CMAKE_CXX_SCAN_FOR_MODULES=OFF
+    "-DCMAKE_CXX_STANDARD=20"
     "-DCMAKE_INSTALL_LIBDIR=lib"
     "-Donnxruntime_BUILD_SHARED_LIB=ON"
     "-Donnxruntime_DISABLE_RTTI=OFF"
