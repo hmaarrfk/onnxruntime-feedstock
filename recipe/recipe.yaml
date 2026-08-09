@@ -100,6 +100,10 @@ outputs:
             # Used by the CoreML execution provider to build mlpackage models;
             # onnxruntime finds it via find_package, so prefer the conda-forge build.
             - nlohmann_json
+            # Use conda-forge's gtest/gmock instead of the vendored copy: the
+            # vendored gtest's printers format chrono time_points via std::format,
+            # which needs float to_chars (unavailable before macOS 13.4).
+            - gmock
         - if: cuda_enabled
           then:
             - cudnn
@@ -258,6 +262,10 @@ outputs:
             # Used by the CoreML execution provider to build mlpackage models;
             # onnxruntime finds it via find_package, so prefer the conda-forge build.
             - nlohmann_json
+            # Use conda-forge's gtest/gmock instead of the vendored copy: the
+            # vendored gtest's printers format chrono time_points via std::format,
+            # which needs float to_chars (unavailable before macOS 13.4).
+            - gmock
         - if: cuda_enabled
           then:
             - cudnn
