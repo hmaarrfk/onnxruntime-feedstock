@@ -83,10 +83,21 @@ if $is_win {
 
 # CUDA configuration
 if $cuda_enabled {
-    let cuda_arch_list = match $cuda_version {
-        "12.9" => "70-real;75-real;80-real;86-real;89-real;90-real;100-real;120"
-        "13.0" => "75-real;80-real;86-real;89-real;90-real;100-real;110-real;120"
-        _ => { error make {msg: $"No CUDA architecture list for v($cuda_version). See build-cpp.nu."} }
+    let cuda_arch_list = if $is_win {
+        match $cuda_version {
+            # SM 100+ (Blackwell) triggers a broken asm in CUDA 12.9
+            # clusterlaunchcontrol.h on Windows (long is 32-bit under MSVC),
+            # fixed in 13.0. SM 110 (Thor) is Linux-only.
+            "12.9" => "70-real;75-real;80-real;86-real;89-real;90-real"
+            "13.0" => "75-real;80-real;86-real;89-real;90-real;100-real;120"
+            _ => { error make {msg: $"No CUDA architecture list for v($cuda_version). See build-cpp.nu."} }
+        }
+    } else {
+        match $cuda_version {
+            "12.9" => "70-real;75-real;80-real;86-real;89-real;90-real;100-real;120"
+            "13.0" => "75-real;80-real;86-real;89-real;90-real;100-real;110-real;120"
+            _ => { error make {msg: $"No CUDA architecture list for v($cuda_version). See build-cpp.nu."} }
+        }
     }
     $env.NINJAJOBS = "1"
     # Limit nvcc parallelism; Windows CUDA 13.0 builds run out of memory otherwise
