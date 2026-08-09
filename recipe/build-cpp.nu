@@ -94,8 +94,10 @@ if $cuda_enabled {
 
     if $is_win {
         let build_lib_prefix = $"($env.BUILD_PREFIX)/Library"
-        # Add nvcc to PATH so cmake can find it (matches build.py behavior)
-        $env.PATH = $"($build_lib_prefix)/bin;($env.PATH)"
+        # Add nvcc to PATH so cmake can find it (matches build.py behavior).
+        # On Windows nushell exposes the path as a list named `Path`; assigning a
+        # string to `PATH` shadows it with a broken value and cl.exe disappears.
+        $env.Path = ($env.Path | prepend $"($build_lib_prefix)/bin")
         $cmake_defines = ($cmake_defines | append [
             "-Donnxruntime_USE_CUDA=ON"
             $"-Donnxruntime_CUDA_HOME=($env.LIBRARY_PREFIX)"
