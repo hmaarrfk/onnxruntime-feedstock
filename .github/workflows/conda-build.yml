@@ -34,30 +34,6 @@ jobs:
             resize_partitions: False
             runs_on: ['namespace-profile-16cpu-on-linux-64;container.privileged=true;container.mount-scratch=true']
             tools_install_dir: ~/miniforge3
-          - CONFIG: linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix
-            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-x86_64:alma10
-            STORE_BUILD_ARTIFACTS: False
-            UPLOAD_PACKAGES: True
-            build_workspace_dir: build_artifacts
-            docker_run_args: 
-            free_disk_space: skip
-            os: ubuntu
-            pagefile_size: 0
-            resize_partitions: False
-            runs_on: ['namespace-profile-16cpu-on-linux-64;container.privileged=true;container.mount-scratch=true']
-            tools_install_dir: ~/miniforge3
-          - CONFIG: linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec
-            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-x86_64:alma10
-            STORE_BUILD_ARTIFACTS: False
-            UPLOAD_PACKAGES: True
-            build_workspace_dir: build_artifacts
-            docker_run_args: 
-            free_disk_space: skip
-            os: ubuntu
-            pagefile_size: 0
-            resize_partitions: False
-            runs_on: ['namespace-profile-16cpu-on-linux-64;container.privileged=true;container.mount-scratch=true']
-            tools_install_dir: ~/miniforge3
           - CONFIG: linux_64_c_stdlib_version2.28cuda_compiler_version13.0suffix
             DOCKER_IMAGE: quay.io/condaforge/linux-anvil-x86_64:alma10
             STORE_BUILD_ARTIFACTS: False
@@ -71,30 +47,6 @@ jobs:
             runs_on: ['namespace-profile-16cpu-on-linux-64;container.privileged=true;container.mount-scratch=true']
             tools_install_dir: ~/miniforge3
           - CONFIG: linux_aarch64_c_stdlib_version2.17cuda_compiler_version12.9suffix
-            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-x86_64:alma10
-            STORE_BUILD_ARTIFACTS: False
-            UPLOAD_PACKAGES: True
-            build_workspace_dir: build_artifacts
-            docker_run_args: 
-            free_disk_space: skip
-            os: ubuntu
-            pagefile_size: 0
-            resize_partitions: False
-            runs_on: ['namespace-profile-16cpu-on-linux-64;container.privileged=true;container.mount-scratch=true']
-            tools_install_dir: ~/miniforge3
-          - CONFIG: linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix
-            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-x86_64:alma10
-            STORE_BUILD_ARTIFACTS: False
-            UPLOAD_PACKAGES: True
-            build_workspace_dir: build_artifacts
-            docker_run_args: 
-            free_disk_space: skip
-            os: ubuntu
-            pagefile_size: 0
-            resize_partitions: False
-            runs_on: ['namespace-profile-16cpu-on-linux-64;container.privileged=true;container.mount-scratch=true']
-            tools_install_dir: ~/miniforge3
-          - CONFIG: linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec
             DOCKER_IMAGE: quay.io/condaforge/linux-anvil-x86_64:alma10
             STORE_BUILD_ARTIFACTS: False
             UPLOAD_PACKAGES: True
@@ -131,30 +83,6 @@ jobs:
             runs_on: ['namespace-profile-16cpu-on-win-64']
             tools_install_dir: D:\Miniforge
           - CONFIG: win_64_cuda_compiler_version13.0suffix
-            STORE_BUILD_ARTIFACTS: False
-            UPLOAD_PACKAGES: True
-            build_platform: win-64
-            build_workspace_dir: D:\\bld\\
-            docker_run_args: 
-            free_disk_space: skip
-            os: windows
-            pagefile_size: 0
-            resize_partitions: False
-            runs_on: ['namespace-profile-16cpu-on-win-64']
-            tools_install_dir: D:\Miniforge
-          - CONFIG: win_64_cuda_compiler_versionNonesuffix
-            STORE_BUILD_ARTIFACTS: False
-            UPLOAD_PACKAGES: True
-            build_platform: win-64
-            build_workspace_dir: D:\\bld\\
-            docker_run_args: 
-            free_disk_space: skip
-            os: windows
-            pagefile_size: 0
-            resize_partitions: False
-            runs_on: ['namespace-profile-16cpu-on-win-64']
-            tools_install_dir: D:\Miniforge
-          - CONFIG: win_64_cuda_compiler_versionNonesuffix-novec
             STORE_BUILD_ARTIFACTS: False
             UPLOAD_PACKAGES: True
             build_platform: win-64
