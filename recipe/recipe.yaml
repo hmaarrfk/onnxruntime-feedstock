@@ -116,6 +116,16 @@ outputs:
         # plugin-ep-cuda/MIN_ONNXRUNTIME_VERSION (enforced at registration)
         - onnxruntime >=1.24.4
         - onnxruntime-cpp >=1.24.4
+      ignore_run_exports:
+        from_package:
+          # Only headers are used at build time: the plugin does not link
+          # these (cuFFT is loaded lazily at runtime — FFT contrib ops fail
+          # cleanly without it — and cusparse/curand/nvrtc are unused), so
+          # do not propagate their run exports.
+          - libcufft-dev
+          - libcusparse-dev
+          - libcurand-dev
+          - cuda-nvrtc-dev
     tests:
       - package_contents:
           files:
