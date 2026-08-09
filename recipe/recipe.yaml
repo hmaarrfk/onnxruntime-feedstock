@@ -316,22 +316,13 @@ about:
   license: ${{ "MIT AND BSL-1.0 AND BSD-3-Clause" if osx else "MIT AND BSL-1.0" }}
   license_file:
     - LICENSE
-    - build-ci/Release/_deps/abseil_cpp-src/LICENSE
-    - build-ci/Release/_deps/eigen3-src/COPYING.MPL2
-    - build-ci/Release/_deps/flatbuffers-src/LICENSE
-    - build-ci/Release/_deps/gsl-src/LICENSE
-    - build-ci/Release/_deps/nlohmann_json-src/LICENSE.MIT
-    - build-ci/Release/_deps/onnx-src/LICENSE
-    - build-ci/Release/_deps/protobuf-src/LICENSE
-    - build-ci/Release/_deps/pytorch_cpuinfo-src/LICENSE
-    - build-ci/Release/_deps/re2-src/LICENSE
-    - build-ci/Release/_deps/safeint-src/LICENSE
-    - if: osx
-      then:
-        # Vendored at build time by onnxruntime for the CoreML execution provider.
-        - build-ci/Release/_deps/coremltools-src/LICENSE.txt
-        - build-ci/Release/_deps/fp16-src/LICENSE
-        - build-ci/Release/_deps/psimd-src/LICENSE
+    # Ship the licenses of every dependency vendored at build time. The set of
+    # vendored deps varies by platform (CoreML pulls in coremltools/fp16/psimd
+    # on osx; some deps come from conda-forge instead of being vendored), and
+    # rattler-build fails the build on any itemized path that does not exist,
+    # so glob rather than itemize.
+    - build-ci/Release/_deps/*/LICENSE*
+    - build-ci/Release/_deps/*/COPYING*
 
 extra:
   feedstock-name: onnxruntime
