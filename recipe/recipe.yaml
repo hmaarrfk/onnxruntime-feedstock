@@ -38,6 +38,12 @@ build:
   number: ${{ build_number }}
   skip:
     - ppc64le
+    # EXPLORATORY (remove before merging): while iterating on the CUDA EP
+    # plugin, build only the linux/win CUDA variants to save CI resources.
+    # The CPU, osx and novec outputs are unchanged from #196 and already green.
+    - cuda_compiler_version == "None"
+    - novec
+    - osx
     # No longer supported upstream and tests fail
     - osx and x86_64
     # No CUDA on macOS
@@ -46,6 +52,76 @@ build:
     - cuda_compiler_version != "None" and novec
 
 outputs:
+  # With CUDA enabled, only the standalone CUDA EP plugin output below is
+  # built (see the per-output skips). The onnxruntime / onnxruntime-cpp /
+  # python packages are CPU-only; GPU support comes from installing
+  # onnxruntime-ep-cuda alongside them and registering the plugin through the
+  # EP plugin API (onnxruntime.register_execution_provider_library or
+  # Env::RegisterExecutionProviderLibrary). The plugin has no Python
+  # dependency and loads into any onnxruntime core >= 1.24.4.
+  - package:
+      name: onnxruntime-ep-cuda
+    build:
+      skip:
+        - not cuda_enabled
+      number: ${{ build_number }}
+      string: h${{ hash }}_${{ build_number }}_${{ build_ext }}
+      script:
+        interpreter: nu
+        env:
+          cuda_compiler_version: ${{ cuda_compiler_version }}
+        file: build-ep-cuda.nu
+    requirements:
+      build:
+        - ${{ compiler('c') }}
+        - ${{ stdlib('c') }}
+        - ${{ compiler('cxx') }}
+        - ${{ compiler('cuda') }}
+        # The vendored protobuf 3.21 does not build with CMake 4
+        - cmake <4
+        - libprotobuf 3.21.*  # We need protoc for cross-compilation
+        - ninja
+        - nushell
+        - if: build_platform != target_platform
+          then:
+            - cuda-cudart-dev
+            - cuda-nvrtc-dev
+        - if: unix
+          then:
+            - patch
+          else:
+            - m2-patch
+      host:
+        - cuda-version ==${{ cuda_compiler_version }}
+        # cuDNN and cuFFT headers are required at build time; at runtime the
+        # plugin loads both lazily instead of hard-linking them.
+        - cudnn
+        - libcublas-dev
+        - libcusparse-dev
+        - libcurand-dev
+        - libcufft-dev
+        - cuda-cudart-dev
+        - cuda-nvrtc-dev
+      run:
+        # avoid that people without GPUs needlessly download ~0.5-1GB
+        - __cuda
+      run_constraints:
+        # Minimum core onnxruntime the plugin can load into, from upstream
+        # plugin-ep-cuda/MIN_ONNXRUNTIME_VERSION (enforced at registration)
+        - onnxruntime >=1.24.4
+        - onnxruntime-cpp >=1.24.4
+    tests:
+      - package_contents:
+          files:
+            - if: win
+              then:
+                - Library/bin/onnxruntime_providers_cuda.dll
+              else:
+                - lib/libonnxruntime_providers_cuda.so
+          strict: true
+
+  # Note: staging outputs cannot carry a `skip`; on CUDA variants this cache
+  # is simply never requested because both inheriting outputs are skipped.
   - staging:
       name: onnxruntime${{ suffix }}-build
     build:
@@ -130,6 +206,8 @@ outputs:
       name: onnxruntime${{ suffix }}-cpp
     inherit: onnxruntime${{ suffix }}-build
     build:
+      skip:
+        - cuda_enabled
       number: ${{ build_number }}
       string: h${{ hash }}_${{ build_number }}_${{ build_ext }}
       files:
@@ -206,6 +284,8 @@ outputs:
       name: onnxruntime${{ suffix }}
     inherit: onnxruntime${{ suffix }}-build
     build:
+      skip:
+        - cuda_enabled
       number: ${{ build_number }}
       string: py${{ python | version_to_buildstring }}h${{ hash }}_${{ build_number }}_${{ build_ext }}
       script:
