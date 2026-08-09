@@ -315,14 +315,45 @@ about:
   # mp11 is BSL 1.0; coremltools (osx) is BSD-3-Clause
   license: ${{ "MIT AND BSL-1.0 AND BSD-3-Clause" if osx else "MIT AND BSL-1.0" }}
   license_file:
+    # The vendored dependency set varies per variant, and rattler-build fails
+    # the build on any listed path that does not exist. Each entry below is
+    # conditioned on exactly the variants that vendor it.
     - LICENSE
-    # Ship the licenses of every dependency vendored at build time. The set of
-    # vendored deps varies by platform (CoreML pulls in coremltools/fp16/psimd
-    # on osx; some deps come from conda-forge instead of being vendored), and
-    # rattler-build fails the build on any itemized path that does not exist,
-    # so glob rather than itemize.
-    - build-ci/Release/_deps/*/LICENSE*
-    - build-ci/Release/_deps/*/COPYING*
+    - build-ci/Release/_deps/abseil_cpp-src/LICENSE
+    - build-ci/Release/_deps/date-src/LICENSE.txt
+    - build-ci/Release/_deps/dlpack-src/LICENSE
+    # EIGEN_MPL2_ONLY=ON, so only MPL2-licensed Eigen code is compiled in
+    - build-ci/Release/_deps/eigen3-src/COPYING.MPL2
+    - build-ci/Release/_deps/flatbuffers-src/LICENSE
+    - build-ci/Release/_deps/gsl-src/LICENSE
+    - build-ci/Release/_deps/onnx-src/LICENSE
+    - build-ci/Release/_deps/protobuf-src/LICENSE
+    - build-ci/Release/_deps/pytorch_cpuinfo-src/LICENSE
+    - build-ci/Release/_deps/re2-src/LICENSE
+    - build-ci/Release/_deps/safeint-src/LICENSE
+    - if: not osx
+      then:
+        # On osx nlohmann_json comes from conda-forge (host dep) and is not vendored
+        - build-ci/Release/_deps/nlohmann_json-src/LICENSE.MIT
+    - if: build_platform == target_platform and cuda_compiler_version == "None" and not osx
+      then:
+        # googletest is vendored only when the unit tests are built (native,
+        # non-CUDA builds); osx uses conda-forge's gtest/gmock instead
+        - build-ci/Release/_deps/googletest-src/LICENSE
+    - if: aarch64 or arm64
+      then:
+        # KleidiAI kernels are vendored on ARM targets
+        - build-ci/Release/_deps/kleidiai-src/LICENSES/Apache-2.0.txt
+        - build-ci/Release/_deps/kleidiai-src/LICENSES/BSD-3-Clause.txt
+    - if: win
+      then:
+        - build-ci/Release/_deps/microsoft_wil-src/LICENSE
+    - if: osx
+      then:
+        # Vendored at build time by onnxruntime for the CoreML execution provider.
+        - build-ci/Release/_deps/coremltools-src/LICENSE.txt
+        - build-ci/Release/_deps/fp16-src/LICENSE
+        - build-ci/Release/_deps/psimd-src/LICENSE
 
 extra:
   feedstock-name: onnxruntime
