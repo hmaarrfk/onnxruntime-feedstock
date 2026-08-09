@@ -401,7 +401,15 @@ about:
     - LICENSE
     - build-ci/Release/_deps/abseil_cpp-src/LICENSE
     - build-ci/Release/_deps/date-src/LICENSE.txt
-    - build-ci/Release/_deps/dlpack-src/LICENSE
+    - if: cuda_compiler_version == "None"
+      then:
+        # dlpack is fetched only when the Python bindings are built
+        # (onnxruntime_ENABLE_DLPACK); CUDA variants build only the plugin.
+        - build-ci/Release/_deps/dlpack-src/LICENSE
+      else:
+        # Vendored by the CUDA EP plugin build.
+        - build-ci/Release/_deps/cutlass-src/LICENSE.txt
+        - build-ci/Release/_deps/cudnn_frontend-src/LICENSE.txt
     # EIGEN_MPL2_ONLY=ON, so only MPL2-licensed Eigen code is compiled in
     - build-ci/Release/_deps/eigen3-src/COPYING.MPL2
     - build-ci/Release/_deps/flatbuffers-src/LICENSE
