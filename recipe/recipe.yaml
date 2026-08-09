@@ -1,5 +1,5 @@
 context:
-  version: "1.24.4"
+  version: "1.28.0"
   suffix: ${{ suffix | default("") }}
   novec: ${{ suffix == "-novec" }}
   cuda_enabled: ${{ cuda_compiler_version != "None" }}
@@ -13,7 +13,7 @@ recipe:
 
 source:
   url: https://github.com/microsoft/onnxruntime/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: 0cf4d2ee4392fbb8aedaabc6b2ba11b4a680d1071fa4f75546c2289ca5b404cf
+  sha256: 9616cbdbbfcb1420b3261cd280a047d74ab0a249825e577b0e2dd310e22f6b83
   patches:
     # Workaround for https://github.com/conda-forge/onnxruntime-feedstock/pull/56#issuecomment-1586080419
     - if: win
@@ -28,16 +28,15 @@ source:
     - patches/0004-Remove-redundant-include-paths-from-custom-op-test-t.patch
     # Keep support for Python 3.10
     - patches/0005-Lower-python_require-to-3.10.patch
+    # New test in 1.28.0 lacks the skip guard its siblings have when onnx is absent
+    - patches/0006-Skip-adapter-string-tensor-test-without-onnx.patch
+    # autoep test gained a module-level onnx import in 1.28.0 but runs before
+    # build.py's "onnx is not installed" gate
+    - patches/0007-Guard-onnx-import-in-autoep-test.patch
 
 build:
   number: ${{ build_number }}
   skip:
-    # DEBUG skips:
-    # - osx
-    # - cuda_compiler_version != "None"
-    - novec
-    # # cross-compilation of linux-aarch64 cuda builds are currently broken
-    # - cuda_compiler_version != "None" and aarch64
     - ppc64le
     # No longer supported upstream and tests fail
     - osx and x86_64
@@ -66,7 +65,8 @@ outputs:
         - ${{ compiler('c') }}
         - ${{ stdlib('c') }}
         - ${{ compiler('cxx') }}
-        - cmake
+        # The vendored protobuf 3.21 does not build with CMake 4
+        - cmake <4
         - libprotobuf 3.21.*  # We need protoc for cross-compilation
         - ninja
         - nushell
@@ -95,6 +95,11 @@ outputs:
         - python 3.13.*
         - setuptools
         - wheel
+        - if: osx
+          then:
+            # Used by the CoreML execution provider to build mlpackage models;
+            # onnxruntime finds it via find_package, so prefer the conda-forge build.
+            - nlohmann_json
         - if: cuda_enabled
           then:
             - cudnn
@@ -119,7 +124,7 @@ outputs:
   # the artifacts from the build stage.
   - package:
       name: onnxruntime${{ suffix }}-cpp
-    inherit: onnxruntime-build
+    inherit: onnxruntime${{ suffix }}-build
     build:
       number: ${{ build_number }}
       string: h${{ hash }}_${{ build_number }}_${{ build_ext }}
@@ -141,6 +146,10 @@ outputs:
       - package_contents:
           include:
             - onnxruntime/onnxruntime_cxx_api.h
+            - if: osx
+              then:
+                # The CoreML execution provider is built into onnxruntime on Apple Silicon.
+                - onnxruntime/coreml_provider_factory.h
           lib:
             - if: unix
               then:
@@ -191,7 +200,7 @@ outputs:
 
   - package:
       name: onnxruntime${{ suffix }}
-    inherit: onnxruntime-build
+    inherit: onnxruntime${{ suffix }}-build
     build:
       number: ${{ build_number }}
       string: py${{ python | version_to_buildstring }}h${{ hash }}_${{ build_number }}_${{ build_ext }}
@@ -211,7 +220,8 @@ outputs:
         - ${{ compiler('c') }}
         - ${{ stdlib('c') }}
         - ${{ compiler('cxx') }}
-        - cmake
+        # The vendored protobuf 3.21 does not build with CMake 4
+        - cmake <4
         - libprotobuf 3.21.*  # We need protoc for cross-compilation
         - ninja
         - nushell
@@ -243,6 +253,11 @@ outputs:
         - python
         - setuptools
         - wheel
+        - if: osx
+          then:
+            # Used by the CoreML execution provider to build mlpackage models;
+            # onnxruntime finds it via find_package, so prefer the conda-forge build.
+            - nlohmann_json
         - if: cuda_enabled
           then:
             - cudnn
@@ -263,7 +278,10 @@ outputs:
         - numpy
         - packaging
         - protobuf
-        - sympy
+        # avoid that people without GPUs needlessly download ~0.5-1GB
+        - if: cuda_enabled
+          then:
+            - __cuda
       run_constraints:
         - if: novec
           then:
@@ -276,11 +294,18 @@ outputs:
               imports:
                 - onnxruntime
               pip_check: true
+          - script:
+              - onnxruntime_test --help
+              - if: osx
+                then:
+                  # The CoreML execution provider is built into onnxruntime on Apple Silicon.
+                  - python -c "import onnxruntime as ort; assert 'CoreMLExecutionProvider' in ort.get_available_providers(), ort.get_available_providers()"
 
 about:
   homepage: https://github.com/microsoft/onnxruntime/
   summary: cross-platform, high performance ML inferencing and training accelerator
-  license: MIT
+  # mp11 is BSL 1.0; coremltools (osx) is BSD-3-Clause
+  license: ${{ "MIT AND BSL-1.0 AND BSD-3-Clause" if osx else "MIT AND BSL-1.0" }}
   license_file:
     - LICENSE
     - build-ci/Release/_deps/abseil_cpp-src/LICENSE
@@ -293,6 +318,12 @@ about:
     - build-ci/Release/_deps/pytorch_cpuinfo-src/LICENSE
     - build-ci/Release/_deps/re2-src/LICENSE
     - build-ci/Release/_deps/safeint-src/LICENSE
+    - if: osx
+      then:
+        # Vendored at build time by onnxruntime for the CoreML execution provider.
+        - build-ci/Release/_deps/coremltools-src/LICENSE.txt
+        - build-ci/Release/_deps/fp16-src/LICENSE
+        - build-ci/Release/_deps/psimd-src/LICENSE
 
 extra:
   recipe-maintainers:

@@ -48,7 +48,7 @@ python $"($env.SRC_DIR)/setup.py" bdist_wheel ...$plat_args ...$plat_args
 pip install ...(glob dist/*.whl) --no-deps --no-build-isolation $"--prefix=($env.PREFIX)"
 
 # Run CPU-relevant Python tests from upstream build.py:
-# https://github.com/microsoft/onnxruntime/blob/v1.24.3/tools/ci_build/build.py#L1770-L1904
+# https://github.com/microsoft/onnxruntime/blob/v1.28.0/tools/ci_build/build.py
 if not $cross_compiling {
     cd $env.SRC_DIR
 

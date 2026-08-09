@@ -50,6 +50,13 @@ mut cmake_defines = ($forwarded_cmake_args | append [
     "-DTHREADS_PREFER_PTHREAD_FLAG=ON"  # Ensure -pthread is used from the start, avoiding cache invalidation in Python stage
 ])
 
+if $is_osx {
+    # Enable the CoreML execution provider on Apple Silicon (osx-x86_64 is
+    # skipped entirely). The CoreML EP is statically linked into libonnxruntime
+    # and exposed as the "CoreMLExecutionProvider".
+    $cmake_defines = ($cmake_defines | append "-Donnxruntime_USE_COREML=ON")
+}
+
 if $is_win {
     # https://github.com/conda-forge/onnxruntime-feedstock/issues/57#issuecomment-1518033552
     $cmake_defines = ($cmake_defines | append [
@@ -76,10 +83,12 @@ if $is_win {
 if $cuda_enabled {
     let cuda_arch_list = match $cuda_version {
         "12.9" => "70-real;75-real;80-real;86-real;89-real;90-real;100-real;120"
-        "13.0" => "75-real;80-real;86-real;89-real;90-real;100-real;120"
+        "13.0" => "75-real;80-real;86-real;89-real;90-real;100-real;110-real;120"
         _ => { error make {msg: $"No CUDA architecture list for v($cuda_version). See build-cpp.nu."} }
     }
     $env.NINJAJOBS = "1"
+    # Limit nvcc parallelism; Windows CUDA 13.0 builds run out of memory otherwise
+    $cmake_defines = ($cmake_defines | append "-Donnxruntime_NVCC_THREADS=2")
 
     if $is_win {
         let build_lib_prefix = $"($env.BUILD_PREFIX)/Library"
