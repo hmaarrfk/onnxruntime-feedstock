@@ -326,6 +326,7 @@ about:
         - build-ci/Release/_deps/psimd-src/LICENSE
 
 extra:
+  feedstock-name: onnxruntime
   recipe-maintainers:
     - xhochy
     - janjagusch
