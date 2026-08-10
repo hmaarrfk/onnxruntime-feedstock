@@ -52,9 +52,12 @@ do
     fi
 done
 
+# No --enable_lto: GCC LTO roughly triples the linux build time (the
+# 5-python job exceeded the runner's 8h session cap twice), while Windows
+# never built with LTO and the rattler megabuild (#196) also shipped
+# LTO-less binaries with green test suites.
 python tools/ci_build/build.py \
     --compile_no_warning_as_error \
-    --enable_lto \
     --build_dir build-ci \
     --cmake_extra_defines "${cmake_extra_defines[@]}" \
     --cmake_generator Ninja \
