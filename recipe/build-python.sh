@@ -6,7 +6,9 @@
 
 set -exuo pipefail
 
-BUILD_ARGS="--skip_pip_install --parallel=8"
+# Use every core: the namespace runners kill sessions at 8h and the previous
+# hard-coded --parallel=8 left half of the 16-core runners idle.
+BUILD_ARGS="--skip_pip_install --parallel=${CPU_COUNT:-0}"
 
 if [[ "${PKG_NAME}" == onnxruntime-novec* ]]; then
     DONT_VECTORIZE="ON"
