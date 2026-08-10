@@ -16,13 +16,23 @@ else
     DONT_VECTORIZE="OFF"
 fi
 
+# The gtest suite is identical for every python version, and running the
+# full upstream test suite five times per CI job does not fit the runners'
+# 8h session cap. Run the full suite on one python per job (3.13); every
+# python still gets the recipe-level import/entry-point tests, and the unit
+# tests are still *built* everywhere so the vendored set stays identical.
+PY_XY=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
 if [[ "${CONDA_BUILD_CROSS_COMPILATION:-0}" == '1' ]]; then
-    echo "Tests are disabled"
+    echo "Tests are disabled (cross-compiling)"
     RUN_TESTS_BUILD_PY_OPTIONS=""
     BUILD_UNIT_TESTS="OFF"
-else
+elif [[ "${PY_XY}" == "3.13" ]]; then
     echo "Tests are enabled"
     RUN_TESTS_BUILD_PY_OPTIONS="--test"
+    BUILD_UNIT_TESTS="ON"
+else
+    echo "Tests are built but only run on python 3.13"
+    RUN_TESTS_BUILD_PY_OPTIONS=""
     BUILD_UNIT_TESTS="ON"
 fi
 
