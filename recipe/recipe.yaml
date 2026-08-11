@@ -37,9 +37,6 @@ source:
 build:
   number: ${{ build_number }}
   skip:
-    # EXPLORATORY (remove before merging): skip the novec variants while
-    # iterating on the split-package layout to save CI resources.
-    - novec
     # Since 1.11, power9 seems to be required.
     - ppc64le
     # No longer supported upstream and tests fail
@@ -268,11 +265,6 @@ outputs:
     build:
       skip:
         - cuda_enabled
-        # EXPLORATORY (remove before merging): the namespace osx runner kills
-        # sessions after ~2h45m, which cannot fit all five python builds; the
-        # osx flow is identical to main's proven conda-build flow, so validate
-        # a single python end-to-end while iterating.
-        - osx and not match(python, "3.13.*")
       number: ${{ build_number }}
       string: py${{ python | version_to_buildstring }}h${{ hash }}_${{ build_number }}_${{ build_ext }}
       script:
