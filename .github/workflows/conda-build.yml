@@ -142,54 +142,6 @@ jobs:
             resize_partitions: False
             runs_on: ['namespace-profile-16cpu-on-linux-64;container.privileged=true;container.mount-scratch=true']
             tools_install_dir: ~/miniforge3
-          - CONFIG: win_64_cuda_compiler_version12.9suffix
-            STORE_BUILD_ARTIFACTS: False
-            UPLOAD_PACKAGES: True
-            build_platform: win-64
-            build_workspace_dir: D:\\bld\\
-            docker_run_args: 
-            free_disk_space: skip
-            os: windows
-            pagefile_size: 0
-            resize_partitions: False
-            runs_on: ['namespace-profile-16cpu-on-win-64']
-            tools_install_dir: D:\Miniforge
-          - CONFIG: win_64_cuda_compiler_version13.0suffix
-            STORE_BUILD_ARTIFACTS: False
-            UPLOAD_PACKAGES: True
-            build_platform: win-64
-            build_workspace_dir: D:\\bld\\
-            docker_run_args: 
-            free_disk_space: skip
-            os: windows
-            pagefile_size: 0
-            resize_partitions: False
-            runs_on: ['namespace-profile-16cpu-on-win-64']
-            tools_install_dir: D:\Miniforge
-          - CONFIG: win_64_cuda_compiler_versionNonesuffix
-            STORE_BUILD_ARTIFACTS: False
-            UPLOAD_PACKAGES: True
-            build_platform: win-64
-            build_workspace_dir: D:\\bld\\
-            docker_run_args: 
-            free_disk_space: skip
-            os: windows
-            pagefile_size: 0
-            resize_partitions: False
-            runs_on: ['namespace-profile-16cpu-on-win-64']
-            tools_install_dir: D:\Miniforge
-          - CONFIG: win_64_cuda_compiler_versionNonesuffix-novec
-            STORE_BUILD_ARTIFACTS: False
-            UPLOAD_PACKAGES: True
-            build_platform: win-64
-            build_workspace_dir: D:\\bld\\
-            docker_run_args: 
-            free_disk_space: skip
-            os: windows
-            pagefile_size: 0
-            resize_partitions: False
-            runs_on: ['namespace-profile-16cpu-on-win-64']
-            tools_install_dir: D:\Miniforge
     steps:
 
     - name: Checkout code
