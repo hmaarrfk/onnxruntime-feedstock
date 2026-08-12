@@ -42,6 +42,9 @@ build:
   number: ${{ build_number }}
   skip:
     - ppc64le
+    # Prototype: restrict the CI matrix to linux (linux-64 / linux-aarch64),
+    # where the TensorRT execution provider is wired up.
+    - not linux
     # No longer supported upstream and tests fail
     - osx and x86_64
     # No CUDA on macOS
