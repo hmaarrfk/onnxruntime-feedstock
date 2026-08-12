@@ -52,12 +52,13 @@ do
     fi
 done
 
-# No --enable_lto: GCC LTO roughly triples the linux build time (the
-# 5-python job exceeded the runner's 8h session cap twice), while Windows
-# never built with LTO and the rattler megabuild (#196) also shipped
-# LTO-less binaries with green test suites.
+# --enable_lto matches the binaries main ships and keeps the pybind11
+# bindings reasonably sized (pybind11 depends on LTO for that, per the
+# nanobind docs). It roughly triples unix build times, which is affordable
+# now that the invalid-UTF-8 gtest hang is fixed.
 python tools/ci_build/build.py \
     --compile_no_warning_as_error \
+    --enable_lto \
     --build_dir build-ci \
     --cmake_extra_defines "${cmake_extra_defines[@]}" \
     --cmake_generator Ninja \
