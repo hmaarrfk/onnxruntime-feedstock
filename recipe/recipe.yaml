@@ -3,9 +3,13 @@ context:
   suffix: ${{ suffix | default("") }}
   novec: ${{ suffix == "-novec" }}
   cuda_enabled: ${{ cuda_compiler_version != "None" }}
+  # TensorRT execution provider. Enabled on the CUDA 13.0 linux builds via the
+  # dedicated `tensorrt` variant axis (defaults to false). The locally-built
+  # TensorRT packages target CUDA 13.0.
+  tensorrt_enabled: ${{ cuda_compiler_version == "13.0" and ((tensorrt | default(false)) ~ "" == "true") }}
   build_number_base: 0
   build_number: ${{ build_number_base + (200 if cuda_enabled else 0) }}
-  build_ext: ${{ ("cuda" ~ (cuda_compiler_version | replace(".", ""))) if cuda_enabled else "cpu" }}
+  build_ext: ${{ ("cuda" ~ (cuda_compiler_version | replace(".", "")) ~ ("_tensorrt" if tensorrt_enabled else "")) if cuda_enabled else "cpu" }}
 
 recipe:
   name: onnxruntime-dummy
@@ -44,6 +48,10 @@ build:
     - cuda_compiler_version != "None" and osx
     # don't build cuda versions with novec
     - cuda_compiler_version != "None" and novec
+    # The `tensorrt: true` axis only makes sense on the CUDA 13.0 build;
+    # skip the inert TensorRT combinations (CPU / CUDA 12.9) to avoid
+    # duplicate packages identical to their `tensorrt: false` counterparts.
+    - ((tensorrt | default(false)) ~ "" == "true") and cuda_compiler_version != "13.0"
 
 outputs:
   - staging:
@@ -56,6 +64,7 @@ outputs:
           GTEST_FILTER: "-RegexFullMatch.NonUtf8Pattern"
           cuda_compiler_version: ${{ cuda_compiler_version }}
           suffix: ${{ suffix }}
+          tensorrt_enabled: ${{ tensorrt_enabled }}
         file: build-cpp.nu
     requirements:
       ###############################################
@@ -114,6 +123,13 @@ outputs:
             - libcufft-dev
             - cuda-cudart-dev
             - cuda-nvrtc-dev
+        - if: tensorrt_enabled
+          then:
+            # TensorRT execution provider (builtin ONNX parser -> links the
+            # shared libnvonnxparser; nothing static). run_exports from the
+            # -devel packages pin the matching runtime libs.
+            - libnvinfer-devel
+            - libnvonnxparser-devel
 
       ignore_run_exports:
         from_package:
@@ -131,7 +147,7 @@ outputs:
     inherit: onnxruntime${{ suffix }}-build
     build:
       number: ${{ build_number }}
-      string: h${{ hash }}_${{ build_number }}_${{ build_ext }}
+      string: ${{ build_ext }}_h${{ hash }}_${{ build_number }}
       files:
         - ${{ "Library/" if win }}lib/*
         - ${{ "Library/" if win }}include/*
@@ -174,6 +190,10 @@ outputs:
                     # and meant to be opened with dlopen-like
                     # functionality. No .lib file is installed.
                     - Library/lib/onnxruntime_providers_cuda.dll
+            - if: tensorrt_enabled
+              then:
+                # TensorRT EP is a dlopen MODULE like the CUDA provider.
+                - lib/libonnxruntime_providers_tensorrt.so
       - if: build_platform == target_platform
         then:
           - script:
@@ -207,7 +227,7 @@ outputs:
     inherit: onnxruntime${{ suffix }}-build
     build:
       number: ${{ build_number }}
-      string: py${{ python | version_to_buildstring }}h${{ hash }}_${{ build_number }}_${{ build_ext }}
+      string: ${{ build_ext }}_py${{ python | version_to_buildstring }}_h${{ hash }}_${{ build_number }}
       script:
         interpreter: nu
         env:
@@ -276,6 +296,11 @@ outputs:
             - libcufft-dev
             - cuda-cudart-dev
             - cuda-nvrtc-dev
+        - if: tensorrt_enabled
+          then:
+            # Keep in sync with the staging stage so the cmake cache stays valid.
+            - libnvinfer-devel
+            - libnvonnxparser-devel
 
         # Tests contain a huge number of binary files that we don't
         # want to ship by running them from the `tests` section.
