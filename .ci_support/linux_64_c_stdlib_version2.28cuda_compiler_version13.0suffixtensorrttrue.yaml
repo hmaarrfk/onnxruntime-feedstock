@@ -7,7 +7,7 @@ c_stdlib:
 c_stdlib_version:
 - '2.28'
 channel_sources:
-- conda-forge
+- file:///home/dferigo/git/trt/staged-recipes/build_artifacts,conda-forge
 channel_targets:
 - conda-forge main
 cuda_compiler:
@@ -39,7 +39,9 @@ python:
 suffix:
 - ''
 target_platform:
-- linux-aarch64
+- linux-64
+tensorrt:
+- true
 zip_keys:
 - - c_compiler_version
   - cxx_compiler_version
