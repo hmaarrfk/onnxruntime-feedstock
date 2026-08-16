@@ -1,16 +1,29 @@
 #!/bin/bash
+# Build the CPU-only onnxruntime Python package with upstream's build.py
+# driver (same flow the conda-build recipe used). CUDA support is provided by
+# the separate onnxruntime-ep-cuda plugin package, so there is no CUDA branch
+# here and each Python variant is a comparatively cheap CPU-only build.
 
 set -exuo pipefail
 
-BUILD_ARGS="--skip_pip_install --parallel=8"
+# Use every core: the namespace runners kill sessions at 8h and the previous
+# hard-coded --parallel=8 left half of the 16-core runners idle.
+BUILD_ARGS="--skip_pip_install --parallel=${CPU_COUNT:-0}"
 
-if [[ "${PKG_NAME}" == 'onnxruntime-novec' ]]; then
+if [[ "${PKG_NAME}" == onnxruntime-novec* ]]; then
     DONT_VECTORIZE="ON"
 else
     DONT_VECTORIZE="OFF"
 fi
 
-if [[ "${CONDA_BUILD_CROSS_COMPILATION:-0}" == '1' || "${cuda_compiler_version:-None}" != "None" ]]; then
+# The RegexFullMatch.NonUtf8Pattern gtest deliberately writes invalid UTF-8
+# to stderr, which kills rattler-build's output reader ("Error reading
+# output: stream did not contain valid UTF-8") and stalls the test process
+# on a full pipe — the job then hangs until the runner's session cap.
+# Same workaround the megabuild recipe used.
+export GTEST_FILTER="-RegexFullMatch.NonUtf8Pattern"
+
+if [[ "${CONDA_BUILD_CROSS_COMPILATION:-0}" == '1' ]]; then
     echo "Tests are disabled"
     RUN_TESTS_BUILD_PY_OPTIONS=""
     BUILD_UNIT_TESTS="OFF"
@@ -42,7 +55,7 @@ cmake_extra_defines=( "EIGEN_MPL2_ONLY=ON" \
                       "onnxruntime_BUILD_UNIT_TESTS=$BUILD_UNIT_TESTS" \
                       "CMAKE_PREFIX_PATH=$PREFIX" \
                       "CMAKE_CXX_STANDARD=20" \
-		      "CMAKE_INSTALL_LIBDIR=lib"
+                      "CMAKE_INSTALL_LIBDIR=lib"
 )
 
 # Copy the defines from the "activate" script (e.g. activate-gcc_linux-aarch64.sh)
@@ -56,46 +69,10 @@ do
     fi
 done
 
-# nvcc is at $BUILD_PREFIX/bin, not $CUDA_HOME/bin in conda-forge CUDA 12
-if [[ ! -z "${cuda_compiler_version+x}" && "${cuda_compiler_version}" != "None" ]]; then
-    case ${cuda_compiler_version} in
-	12.9)
-            export CUDA_ARCH_LIST="70-real;75-real;80-real;86-real;89-real;90-real;100-real;120"
-            ;;
-	13.0)
-            export CUDA_ARCH_LIST="75-real;80-real;86-real;89-real;90-real;100-real;110-real;120"
-            ;;
-	*)
-            echo "No CUDA architecture list exists for CUDA v${cuda_compiler_version}. See build.sh for information on adding one."
-	    exit 1
-    esac
-    case ${target_platform} in
-	linux-64)
-            CUDA_TARGET=x86_64-linux
-            ;;
-	linux-aarch64)
-            CUDA_TARGET=sbsa-linux
-            ;;
-	*)
-            echo "unknown CUDA arch, edit build.sh"
-            exit 1
-    esac
-    export CUDA_HOME="${BUILD_PREFIX}/targets/${CUDA_TARGET}"
-    # The fpA_intB_gemm/fpA_intB_gemv cutlass kernels added in 1.29.0 need several GB
-    # of RAM per architecture in nvcc, and CUDA_ARCH_LIST asks for eight of them. With
-    # --parallel=8 --nvcc_threads=2 that is up to 16 concurrent cicc processes, which
-    # OOM-kills the 16-core/63 GB Linux runners (exit 137, always in the middle of
-    # llm/fpA_intB_gemv/dispatcher_*_int4*.cu). Compile one architecture at a time per
-    # translation unit so peak memory scales with --parallel alone.
-    # NB: the NINJAJOBS=1 that used to live here never did anything -- build.py passes
-    # `-j${parallel}` to ninja explicitly and nothing reads that variable.
-    BUILD_ARGS="${BUILD_ARGS} --use_cuda --cuda_home ${CUDA_HOME} --cudnn_home ${PREFIX} --nvcc_threads=1"
-    cmake_extra_defines+=( "CMAKE_CUDA_COMPILER=${BUILD_PREFIX}/bin/nvcc" \
-			   "CMAKE_CUDA_ARCHITECTURES=${CUDA_ARCH_LIST}"
-			 )
-
-fi
-
+# --enable_lto matches the binaries main ships and keeps the pybind11
+# bindings reasonably sized (pybind11 depends on LTO for that, per the
+# nanobind docs). It roughly triples unix build times, which is affordable
+# now that the invalid-UTF-8 gtest hang is fixed.
 # Since 1.29.0 telemetry is opt-out rather than opt-in. On non-Windows it pulls the
 # Microsoft 1DS SDK (plus vendored curl/mbedTLS) into libonnxruntime and reports usage
 # to Microsoft, neither of which belongs in a conda-forge package. Without a vcpkg
@@ -115,10 +92,6 @@ python tools/ci_build/build.py \
     --path_to_protoc_exe $BUILD_PREFIX/bin/protoc \
     ${BUILD_ARGS}
 
-# Install the project into cwd.
-# This is needed only to produce the exported CMake targets.
-cmake --install build-ci/Release --prefix "install-ci"
-
 for whl_file in build-ci/Release/dist/onnxruntime*.whl; do
-    python -m pip install "$whl_file"
+    python -m pip install "$whl_file" --no-deps --no-build-isolation
 done
