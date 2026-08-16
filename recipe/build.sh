@@ -81,16 +81,28 @@ if [[ ! -z "${cuda_compiler_version+x}" && "${cuda_compiler_version}" != "None" 
             exit 1
     esac
     export CUDA_HOME="${BUILD_PREFIX}/targets/${CUDA_TARGET}"
-    BUILD_ARGS="${BUILD_ARGS} --use_cuda --cuda_home ${CUDA_HOME} --cudnn_home ${PREFIX} --nvcc_threads=2"
-    export NINJAJOBS=1
+    # The fpA_intB_gemm/fpA_intB_gemv cutlass kernels added in 1.29.0 need several GB
+    # of RAM per architecture in nvcc, and CUDA_ARCH_LIST asks for eight of them. With
+    # --parallel=8 --nvcc_threads=2 that is up to 16 concurrent cicc processes, which
+    # OOM-kills the 16-core/63 GB Linux runners (exit 137, always in the middle of
+    # llm/fpA_intB_gemv/dispatcher_*_int4*.cu). Compile one architecture at a time per
+    # translation unit so peak memory scales with --parallel alone.
+    # NB: the NINJAJOBS=1 that used to live here never did anything -- build.py passes
+    # `-j${parallel}` to ninja explicitly and nothing reads that variable.
+    BUILD_ARGS="${BUILD_ARGS} --use_cuda --cuda_home ${CUDA_HOME} --cudnn_home ${PREFIX} --nvcc_threads=1"
     cmake_extra_defines+=( "CMAKE_CUDA_COMPILER=${BUILD_PREFIX}/bin/nvcc" \
 			   "CMAKE_CUDA_ARCHITECTURES=${CUDA_ARCH_LIST}"
 			 )
 
 fi
 
+# Since 1.29.0 telemetry is opt-out rather than opt-in. On non-Windows it pulls the
+# Microsoft 1DS SDK (plus vendored curl/mbedTLS) into libonnxruntime and reports usage
+# to Microsoft, neither of which belongs in a conda-forge package. Without a vcpkg
+# manifest the 1DS target is missing entirely, so the link of libonnxruntime fails.
 python tools/ci_build/build.py \
     --compile_no_warning_as_error \
+    --no_telemetry \
     --enable_lto \
     --build_dir build-ci \
     --cmake_extra_defines "${cmake_extra_defines[@]}" \
