@@ -4,8 +4,8 @@ context:
   novec: ${{ suffix == "-novec" }}
   cuda_enabled: ${{ cuda_compiler_version != "None" }}
   # TensorRT execution provider. Enabled on the CUDA 13.0 linux builds via the
-  # dedicated `tensorrt` variant axis (defaults to false). The locally-built
-  # TensorRT packages target CUDA 13.0.
+  # dedicated `tensorrt` variant axis (defaults to false). The conda-forge
+  # TensorRT packages ship CUDA 13.0 builds for linux-64 and linux-aarch64.
   tensorrt_enabled: ${{ cuda_compiler_version == "13.0" and ((tensorrt | default(false)) ~ "" == "true") }}
   build_number_base: 0
   build_number: ${{ build_number_base + (200 if cuda_enabled else 0) }}
