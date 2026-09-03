@@ -141,6 +141,20 @@ if $cuda_enabled {
     }
 }
 
+# TensorRT execution provider (Linux/CUDA only for this prototype).
+# Uses TensorRT's builtin ONNX parser, which links the shared libnvonnxparser
+# from the SDK (no static onnx-tensorrt build). TENSORRT_HOME points at the
+# host prefix where libnvinfer-devel / libnvonnxparser-devel install lib/ and
+# include/.
+let trt_enabled = (($env.tensorrt_enabled? | default "false") == "true")
+if $trt_enabled {
+    $cmake_defines = ($cmake_defines | append [
+        "-Donnxruntime_USE_TENSORRT=ON"
+        "-Donnxruntime_USE_TENSORRT_BUILTIN_PARSER=ON"
+        $"-Donnxruntime_TENSORRT_HOME=($prefix_path)"
+    ])
+}
+
 # Configure
 cmake -S cmake -B build-ci/Release -G Ninja --compile-no-warning-as-error ...$cmake_defines
 

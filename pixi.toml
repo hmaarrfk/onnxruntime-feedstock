@@ -5,7 +5,7 @@
 
 [workspace]
 name = "onnxruntime-feedstock"
-version = "2026.8.9"  # conda-smithy version used to generate this file
+version = "2026.9.1"  # conda-smithy version used to generate this file
 description = "Pixi configuration for conda-forge/onnxruntime-feedstock"
 authors = ["@conda-forge/onnxruntime"]
 channels = ["conda-forge"]
@@ -37,132 +37,150 @@ description = "List contents of all packages found in rattler-build build direct
 [feature.build.tasks.build]
 cmd = "rattler-build build --recipe recipe"
 description = "Build onnxruntime-feedstock directly (without setup scripts), no particular variant specified"
-[feature.build.tasks."build-linux_64_c_stdlib_version2.17cuda_compiler_version12.9suffix"]
-cmd = "rattler-build build --recipe recipe -m .ci_support/linux_64_c_stdlib_version2.17cuda_compiler_version12.9suffix.yaml"
-description = "Build onnxruntime-feedstock with variant linux_64_c_stdlib_version2.17cuda_compiler_version12.9suffix directly (without setup scripts)"
-[feature.build.tasks."debug-linux_64_c_stdlib_version2.17cuda_compiler_version12.9suffix"]
-cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_64_c_stdlib_version2.17cuda_compiler_version12.9suffix.yaml"
-description = "Build onnxruntime-feedstock with variant linux_64_c_stdlib_version2.17cuda_compiler_version12.9suffix directly (without setup scripts)"
-[feature.build.tasks."inspect-linux_64_c_stdlib_version2.17cuda_compiler_version12.9suffix"]
-cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_64_c_stdlib_version2.17cuda_compiler_version12.9suffix.yaml"
-description = "List contents of onnxruntime-feedstock packages built for variant linux_64_c_stdlib_version2.17cuda_compiler_version12.9suffix"
-[feature.build.tasks."build-linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix"]
-cmd = "rattler-build build --recipe recipe -m .ci_support/linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix.yaml"
-description = "Build onnxruntime-feedstock with variant linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix directly (without setup scripts)"
-[feature.build.tasks."debug-linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix"]
-cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix.yaml"
-description = "Build onnxruntime-feedstock with variant linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix directly (without setup scripts)"
-[feature.build.tasks."inspect-linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix"]
-cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix.yaml"
-description = "List contents of onnxruntime-feedstock packages built for variant linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix"
-[feature.build.tasks."build-linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec"]
-cmd = "rattler-build build --recipe recipe -m .ci_support/linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec.yaml"
-description = "Build onnxruntime-feedstock with variant linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec directly (without setup scripts)"
-[feature.build.tasks."debug-linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec"]
-cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec.yaml"
-description = "Build onnxruntime-feedstock with variant linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec directly (without setup scripts)"
-[feature.build.tasks."inspect-linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec"]
-cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec.yaml"
-description = "List contents of onnxruntime-feedstock packages built for variant linux_64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec"
-[feature.build.tasks."build-linux_64_c_stdlib_version2.28cuda_compiler_version13.0suffix"]
-cmd = "rattler-build build --recipe recipe -m .ci_support/linux_64_c_stdlib_version2.28cuda_compiler_version13.0suffix.yaml"
-description = "Build onnxruntime-feedstock with variant linux_64_c_stdlib_version2.28cuda_compiler_version13.0suffix directly (without setup scripts)"
-[feature.build.tasks."debug-linux_64_c_stdlib_version2.28cuda_compiler_version13.0suffix"]
-cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_64_c_stdlib_version2.28cuda_compiler_version13.0suffix.yaml"
-description = "Build onnxruntime-feedstock with variant linux_64_c_stdlib_version2.28cuda_compiler_version13.0suffix directly (without setup scripts)"
-[feature.build.tasks."inspect-linux_64_c_stdlib_version2.28cuda_compiler_version13.0suffix"]
-cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_64_c_stdlib_version2.28cuda_compiler_version13.0suffix.yaml"
-description = "List contents of onnxruntime-feedstock packages built for variant linux_64_c_stdlib_version2.28cuda_compiler_version13.0suffix"
-[feature.build.tasks."build-linux_aarch64_c_stdlib_version2.17cuda_compiler_version12.9suffix"]
-cmd = "rattler-build build --recipe recipe -m .ci_support/linux_aarch64_c_stdlib_version2.17cuda_compiler_version12.9suffix.yaml"
-description = "Build onnxruntime-feedstock with variant linux_aarch64_c_stdlib_version2.17cuda_compiler_version12.9suffix directly (without setup scripts)"
-[feature.build.tasks."debug-linux_aarch64_c_stdlib_version2.17cuda_compiler_version12.9suffix"]
-cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_aarch64_c_stdlib_version2.17cuda_compiler_version12.9suffix.yaml"
-description = "Build onnxruntime-feedstock with variant linux_aarch64_c_stdlib_version2.17cuda_compiler_version12.9suffix directly (without setup scripts)"
-[feature.build.tasks."inspect-linux_aarch64_c_stdlib_version2.17cuda_compiler_version12.9suffix"]
-cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_aarch64_c_stdlib_version2.17cuda_compiler_version12.9suffix.yaml"
-description = "List contents of onnxruntime-feedstock packages built for variant linux_aarch64_c_stdlib_version2.17cuda_compiler_version12.9suffix"
-[feature.build.tasks."build-linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix"]
-cmd = "rattler-build build --recipe recipe -m .ci_support/linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix.yaml"
-description = "Build onnxruntime-feedstock with variant linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix directly (without setup scripts)"
-[feature.build.tasks."debug-linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix"]
-cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix.yaml"
-description = "Build onnxruntime-feedstock with variant linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix directly (without setup scripts)"
-[feature.build.tasks."inspect-linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix"]
-cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix.yaml"
-description = "List contents of onnxruntime-feedstock packages built for variant linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix"
-[feature.build.tasks."build-linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec"]
-cmd = "rattler-build build --recipe recipe -m .ci_support/linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec.yaml"
-description = "Build onnxruntime-feedstock with variant linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec directly (without setup scripts)"
-[feature.build.tasks."debug-linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec"]
-cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec.yaml"
-description = "Build onnxruntime-feedstock with variant linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec directly (without setup scripts)"
-[feature.build.tasks."inspect-linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec"]
-cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec.yaml"
-description = "List contents of onnxruntime-feedstock packages built for variant linux_aarch64_c_stdlib_version2.17cuda_compiler_versionNonesuffix-novec"
-[feature.build.tasks."build-linux_aarch64_c_stdlib_version2.28cuda_compiler_version13.0suffix"]
-cmd = "rattler-build build --recipe recipe -m .ci_support/linux_aarch64_c_stdlib_version2.28cuda_compiler_version13.0suffix.yaml"
-description = "Build onnxruntime-feedstock with variant linux_aarch64_c_stdlib_version2.28cuda_compiler_version13.0suffix directly (without setup scripts)"
-[feature.build.tasks."debug-linux_aarch64_c_stdlib_version2.28cuda_compiler_version13.0suffix"]
-cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_aarch64_c_stdlib_version2.28cuda_compiler_version13.0suffix.yaml"
-description = "Build onnxruntime-feedstock with variant linux_aarch64_c_stdlib_version2.28cuda_compiler_version13.0suffix directly (without setup scripts)"
-[feature.build.tasks."inspect-linux_aarch64_c_stdlib_version2.28cuda_compiler_version13.0suffix"]
-cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_aarch64_c_stdlib_version2.28cuda_compiler_version13.0suffix.yaml"
-description = "List contents of onnxruntime-feedstock packages built for variant linux_aarch64_c_stdlib_version2.28cuda_compiler_version13.0suffix"
-[feature.build.tasks."build-osx_arm64_suffix"]
-cmd = "rattler-build build --recipe recipe -m .ci_support/osx_arm64_suffix.yaml"
-description = "Build onnxruntime-feedstock with variant osx_arm64_suffix directly (without setup scripts)"
-[feature.build.tasks."debug-osx_arm64_suffix"]
-cmd = "rattler-build debug setup --recipe recipe -m .ci_support/osx_arm64_suffix.yaml"
-description = "Build onnxruntime-feedstock with variant osx_arm64_suffix directly (without setup scripts)"
-[feature.build.tasks."inspect-osx_arm64_suffix"]
-cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/osx_arm64_suffix.yaml"
-description = "List contents of onnxruntime-feedstock packages built for variant osx_arm64_suffix"
-[feature.build.tasks."build-osx_arm64_suffix-novec"]
-cmd = "rattler-build build --recipe recipe -m .ci_support/osx_arm64_suffix-novec.yaml"
-description = "Build onnxruntime-feedstock with variant osx_arm64_suffix-novec directly (without setup scripts)"
-[feature.build.tasks."debug-osx_arm64_suffix-novec"]
-cmd = "rattler-build debug setup --recipe recipe -m .ci_support/osx_arm64_suffix-novec.yaml"
-description = "Build onnxruntime-feedstock with variant osx_arm64_suffix-novec directly (without setup scripts)"
-[feature.build.tasks."inspect-osx_arm64_suffix-novec"]
-cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/osx_arm64_suffix-novec.yaml"
-description = "List contents of onnxruntime-feedstock packages built for variant osx_arm64_suffix-novec"
-[feature.build.tasks."build-win_64_cuda_compiler_version12.9suffix"]
-cmd = "rattler-build build --recipe recipe -m .ci_support/win_64_cuda_compiler_version12.9suffix.yaml"
-description = "Build onnxruntime-feedstock with variant win_64_cuda_compiler_version12.9suffix directly (without setup scripts)"
-[feature.build.tasks."debug-win_64_cuda_compiler_version12.9suffix"]
-cmd = "rattler-build debug setup --recipe recipe -m .ci_support/win_64_cuda_compiler_version12.9suffix.yaml"
-description = "Build onnxruntime-feedstock with variant win_64_cuda_compiler_version12.9suffix directly (without setup scripts)"
-[feature.build.tasks."inspect-win_64_cuda_compiler_version12.9suffix"]
-cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/win_64_cuda_compiler_version12.9suffix.yaml"
-description = "List contents of onnxruntime-feedstock packages built for variant win_64_cuda_compiler_version12.9suffix"
-[feature.build.tasks."build-win_64_cuda_compiler_version13.0suffix"]
-cmd = "rattler-build build --recipe recipe -m .ci_support/win_64_cuda_compiler_version13.0suffix.yaml"
-description = "Build onnxruntime-feedstock with variant win_64_cuda_compiler_version13.0suffix directly (without setup scripts)"
-[feature.build.tasks."debug-win_64_cuda_compiler_version13.0suffix"]
-cmd = "rattler-build debug setup --recipe recipe -m .ci_support/win_64_cuda_compiler_version13.0suffix.yaml"
-description = "Build onnxruntime-feedstock with variant win_64_cuda_compiler_version13.0suffix directly (without setup scripts)"
-[feature.build.tasks."inspect-win_64_cuda_compiler_version13.0suffix"]
-cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/win_64_cuda_compiler_version13.0suffix.yaml"
-description = "List contents of onnxruntime-feedstock packages built for variant win_64_cuda_compiler_version13.0suffix"
-[feature.build.tasks."build-win_64_cuda_compiler_versionNonesuffix"]
-cmd = "rattler-build build --recipe recipe -m .ci_support/win_64_cuda_compiler_versionNonesuffix.yaml"
-description = "Build onnxruntime-feedstock with variant win_64_cuda_compiler_versionNonesuffix directly (without setup scripts)"
-[feature.build.tasks."debug-win_64_cuda_compiler_versionNonesuffix"]
-cmd = "rattler-build debug setup --recipe recipe -m .ci_support/win_64_cuda_compiler_versionNonesuffix.yaml"
-description = "Build onnxruntime-feedstock with variant win_64_cuda_compiler_versionNonesuffix directly (without setup scripts)"
-[feature.build.tasks."inspect-win_64_cuda_compiler_versionNonesuffix"]
-cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/win_64_cuda_compiler_versionNonesuffix.yaml"
-description = "List contents of onnxruntime-feedstock packages built for variant win_64_cuda_compiler_versionNonesuffix"
-[feature.build.tasks."build-win_64_cuda_compiler_versionNonesuffix-novec"]
-cmd = "rattler-build build --recipe recipe -m .ci_support/win_64_cuda_compiler_versionNonesuffix-novec.yaml"
-description = "Build onnxruntime-feedstock with variant win_64_cuda_compiler_versionNonesuffix-novec directly (without setup scripts)"
-[feature.build.tasks."debug-win_64_cuda_compiler_versionNonesuffix-novec"]
-cmd = "rattler-build debug setup --recipe recipe -m .ci_support/win_64_cuda_compiler_versionNonesuffix-novec.yaml"
-description = "Build onnxruntime-feedstock with variant win_64_cuda_compiler_versionNonesuffix-novec directly (without setup scripts)"
-[feature.build.tasks."inspect-win_64_cuda_compiler_versionNonesuffix-novec"]
-cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/win_64_cuda_compiler_versionNonesuffix-novec.yaml"
-description = "List contents of onnxruntime-feedstock packages built for variant win_64_cuda_compiler_versionNonesuffix-novec"
+[feature.build.tasks."build-linux_64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrtfalse"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrtfalse.yaml --target-platform linux-64"
+description = "Build onnxruntime-feedstock with variant linux_64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrtfalse directly (without setup scripts)"
+[feature.build.tasks."debug-linux_64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrtfalse"]
+cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrtfalse.yaml --target-platform linux-64"
+description = "Debug onnxruntime-feedstock with variant linux_64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrtfalse directly (without setup scripts)"
+[feature.build.tasks."inspect-linux_64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrtfalse"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrtfalse.yaml"
+description = "List contents of onnxruntime-feedstock packages built for variant linux_64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrtfalse"
+[feature.build.tasks."build-linux_64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrttrue"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrttrue.yaml --target-platform linux-64"
+description = "Build onnxruntime-feedstock with variant linux_64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrttrue directly (without setup scripts)"
+[feature.build.tasks."debug-linux_64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrttrue"]
+cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrttrue.yaml --target-platform linux-64"
+description = "Debug onnxruntime-feedstock with variant linux_64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrttrue directly (without setup scripts)"
+[feature.build.tasks."inspect-linux_64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrttrue"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrttrue.yaml"
+description = "List contents of onnxruntime-feedstock packages built for variant linux_64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrttrue"
+[feature.build.tasks."build-linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrtfalse"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrtfalse.yaml --target-platform linux-64"
+description = "Build onnxruntime-feedstock with variant linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrtfalse directly (without setup scripts)"
+[feature.build.tasks."debug-linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrtfalse"]
+cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrtfalse.yaml --target-platform linux-64"
+description = "Debug onnxruntime-feedstock with variant linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrtfalse directly (without setup scripts)"
+[feature.build.tasks."inspect-linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrtfalse"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrtfalse.yaml"
+description = "List contents of onnxruntime-feedstock packages built for variant linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrtfalse"
+[feature.build.tasks."build-linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrttrue"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrttrue.yaml --target-platform linux-64"
+description = "Build onnxruntime-feedstock with variant linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrttrue directly (without setup scripts)"
+[feature.build.tasks."debug-linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrttrue"]
+cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrttrue.yaml --target-platform linux-64"
+description = "Debug onnxruntime-feedstock with variant linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrttrue directly (without setup scripts)"
+[feature.build.tasks."inspect-linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrttrue"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrttrue.yaml"
+description = "List contents of onnxruntime-feedstock packages built for variant linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrttrue"
+[feature.build.tasks."build-linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrtfalse"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrtfalse.yaml --target-platform linux-64"
+description = "Build onnxruntime-feedstock with variant linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrtfalse directly (without setup scripts)"
+[feature.build.tasks."debug-linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrtfalse"]
+cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrtfalse.yaml --target-platform linux-64"
+description = "Debug onnxruntime-feedstock with variant linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrtfalse directly (without setup scripts)"
+[feature.build.tasks."inspect-linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrtfalse"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrtfalse.yaml"
+description = "List contents of onnxruntime-feedstock packages built for variant linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrtfalse"
+[feature.build.tasks."build-linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrttrue"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrttrue.yaml --target-platform linux-64"
+description = "Build onnxruntime-feedstock with variant linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrttrue directly (without setup scripts)"
+[feature.build.tasks."debug-linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrttrue"]
+cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrttrue.yaml --target-platform linux-64"
+description = "Debug onnxruntime-feedstock with variant linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrttrue directly (without setup scripts)"
+[feature.build.tasks."inspect-linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrttrue"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrttrue.yaml"
+description = "List contents of onnxruntime-feedstock packages built for variant linux_64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrttrue"
+[feature.build.tasks."build-linux_64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrtfalse"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrtfalse.yaml --target-platform linux-64"
+description = "Build onnxruntime-feedstock with variant linux_64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrtfalse directly (without setup scripts)"
+[feature.build.tasks."debug-linux_64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrtfalse"]
+cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrtfalse.yaml --target-platform linux-64"
+description = "Debug onnxruntime-feedstock with variant linux_64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrtfalse directly (without setup scripts)"
+[feature.build.tasks."inspect-linux_64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrtfalse"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrtfalse.yaml"
+description = "List contents of onnxruntime-feedstock packages built for variant linux_64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrtfalse"
+[feature.build.tasks."build-linux_64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrttrue"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrttrue.yaml --target-platform linux-64"
+description = "Build onnxruntime-feedstock with variant linux_64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrttrue directly (without setup scripts)"
+[feature.build.tasks."debug-linux_64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrttrue"]
+cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrttrue.yaml --target-platform linux-64"
+description = "Debug onnxruntime-feedstock with variant linux_64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrttrue directly (without setup scripts)"
+[feature.build.tasks."inspect-linux_64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrttrue"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrttrue.yaml"
+description = "List contents of onnxruntime-feedstock packages built for variant linux_64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrttrue"
+[feature.build.tasks."build-linux_aarch64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrtfalse"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_aarch64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrtfalse.yaml --target-platform linux-aarch64"
+description = "Build onnxruntime-feedstock with variant linux_aarch64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrtfalse directly (without setup scripts)"
+[feature.build.tasks."debug-linux_aarch64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrtfalse"]
+cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_aarch64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrtfalse.yaml --target-platform linux-aarch64"
+description = "Debug onnxruntime-feedstock with variant linux_aarch64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrtfalse directly (without setup scripts)"
+[feature.build.tasks."inspect-linux_aarch64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrtfalse"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_aarch64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrtfalse.yaml"
+description = "List contents of onnxruntime-feedstock packages built for variant linux_aarch64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrtfalse"
+[feature.build.tasks."build-linux_aarch64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrttrue"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_aarch64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrttrue.yaml --target-platform linux-aarch64"
+description = "Build onnxruntime-feedstock with variant linux_aarch64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrttrue directly (without setup scripts)"
+[feature.build.tasks."debug-linux_aarch64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrttrue"]
+cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_aarch64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrttrue.yaml --target-platform linux-aarch64"
+description = "Debug onnxruntime-feedstock with variant linux_aarch64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrttrue directly (without setup scripts)"
+[feature.build.tasks."inspect-linux_aarch64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrttrue"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_aarch64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrttrue.yaml"
+description = "List contents of onnxruntime-feedstock packages built for variant linux_aarch64_c_compiler_version14c_stdlib_version2.17cuda_compiler_version12.9cxx_compiler_version14suffixtensorrttrue"
+[feature.build.tasks."build-linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrtfalse"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrtfalse.yaml --target-platform linux-aarch64"
+description = "Build onnxruntime-feedstock with variant linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrtfalse directly (without setup scripts)"
+[feature.build.tasks."debug-linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrtfalse"]
+cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrtfalse.yaml --target-platform linux-aarch64"
+description = "Debug onnxruntime-feedstock with variant linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrtfalse directly (without setup scripts)"
+[feature.build.tasks."inspect-linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrtfalse"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrtfalse.yaml"
+description = "List contents of onnxruntime-feedstock packages built for variant linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrtfalse"
+[feature.build.tasks."build-linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrttrue"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrttrue.yaml --target-platform linux-aarch64"
+description = "Build onnxruntime-feedstock with variant linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrttrue directly (without setup scripts)"
+[feature.build.tasks."debug-linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrttrue"]
+cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrttrue.yaml --target-platform linux-aarch64"
+description = "Debug onnxruntime-feedstock with variant linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrttrue directly (without setup scripts)"
+[feature.build.tasks."inspect-linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrttrue"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrttrue.yaml"
+description = "List contents of onnxruntime-feedstock packages built for variant linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffix-novectensorrttrue"
+[feature.build.tasks."build-linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrtfalse"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrtfalse.yaml --target-platform linux-aarch64"
+description = "Build onnxruntime-feedstock with variant linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrtfalse directly (without setup scripts)"
+[feature.build.tasks."debug-linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrtfalse"]
+cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrtfalse.yaml --target-platform linux-aarch64"
+description = "Debug onnxruntime-feedstock with variant linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrtfalse directly (without setup scripts)"
+[feature.build.tasks."inspect-linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrtfalse"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrtfalse.yaml"
+description = "List contents of onnxruntime-feedstock packages built for variant linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrtfalse"
+[feature.build.tasks."build-linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrttrue"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrttrue.yaml --target-platform linux-aarch64"
+description = "Build onnxruntime-feedstock with variant linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrttrue directly (without setup scripts)"
+[feature.build.tasks."debug-linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrttrue"]
+cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrttrue.yaml --target-platform linux-aarch64"
+description = "Debug onnxruntime-feedstock with variant linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrttrue directly (without setup scripts)"
+[feature.build.tasks."inspect-linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrttrue"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrttrue.yaml"
+description = "List contents of onnxruntime-feedstock packages built for variant linux_aarch64_c_compiler_version15c_stdlib_version2.17cuda_compiler_versionNonecxx_compiler_version15suffixtensorrttrue"
+[feature.build.tasks."build-linux_aarch64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrtfalse"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_aarch64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrtfalse.yaml --target-platform linux-aarch64"
+description = "Build onnxruntime-feedstock with variant linux_aarch64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrtfalse directly (without setup scripts)"
+[feature.build.tasks."debug-linux_aarch64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrtfalse"]
+cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_aarch64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrtfalse.yaml --target-platform linux-aarch64"
+description = "Debug onnxruntime-feedstock with variant linux_aarch64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrtfalse directly (without setup scripts)"
+[feature.build.tasks."inspect-linux_aarch64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrtfalse"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_aarch64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrtfalse.yaml"
+description = "List contents of onnxruntime-feedstock packages built for variant linux_aarch64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrtfalse"
+[feature.build.tasks."build-linux_aarch64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrttrue"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_aarch64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrttrue.yaml --target-platform linux-aarch64"
+description = "Build onnxruntime-feedstock with variant linux_aarch64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrttrue directly (without setup scripts)"
+[feature.build.tasks."debug-linux_aarch64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrttrue"]
+cmd = "rattler-build debug setup --recipe recipe -m .ci_support/linux_aarch64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrttrue.yaml --target-platform linux-aarch64"
+description = "Debug onnxruntime-feedstock with variant linux_aarch64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrttrue directly (without setup scripts)"
+[feature.build.tasks."inspect-linux_aarch64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrttrue"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_aarch64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrttrue.yaml"
+description = "List contents of onnxruntime-feedstock packages built for variant linux_aarch64_c_compiler_version15c_stdlib_version2.28cuda_compiler_version13.0cxx_compiler_version15suffixtensorrttrue"
 
 [environments]
 build = ["build"]
