@@ -219,6 +219,12 @@ outputs:
   #
   # or from C++ with Env::RegisterExecutionProviderLibrary. This is the same flow
   # onnxruntime-ep-cuda uses, so GPU users get one mechanism for both EPs.
+  #
+  # The familiar spelling works too, because the linux core builds set
+  # onnxruntime_USE_TENSORRT_INTERFACE=ON and the registration call above is what puts
+  # this directory on the provider bridge search path:
+  #
+  #     sess = ort.InferenceSession(model, providers=["TensorrtExecutionProvider"])
   # ---------------------------------------------------------------------------
   - package:
       name: onnxruntime-ep-tensorrt

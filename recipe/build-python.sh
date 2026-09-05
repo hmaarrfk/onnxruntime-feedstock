@@ -58,6 +58,19 @@ cmake_extra_defines=( "EIGEN_MPL2_ONLY=ON" \
                       "CMAKE_INSTALL_LIBDIR=lib"
 )
 
+# Make the core aware of the TensorRT provider-bridge entry points
+# (SessionOptionsAppendExecutionProvider_TensorRT_V2, CreateTensorRTProviderOptions,
+# and "TensorrtExecutionProvider" in the Python providers= list). This costs nothing:
+# it pulls in no TensorRT headers or libraries, only in-tree ones, and does not build
+# the EP. Without it the onnxruntime-ep-tensorrt package is reachable only through the
+# newer auto-EP selection API; with it the familiar
+# providers=["TensorrtExecutionProvider"] spelling works too, once the EP library has
+# been registered once (which is what puts its directory on the bridge search path).
+# Gated to linux to match where onnxruntime-ep-tensorrt is actually built.
+if [[ "${target_platform}" == linux-* ]]; then
+    cmake_extra_defines+=( "onnxruntime_USE_TENSORRT_INTERFACE=ON" )
+fi
+
 # Copy the defines from the "activate" script (e.g. activate-gcc_linux-aarch64.sh)
 # into --cmake_extra_defines.
 read -a CMAKE_ARGS_ARRAY <<< "${CMAKE_ARGS}"
