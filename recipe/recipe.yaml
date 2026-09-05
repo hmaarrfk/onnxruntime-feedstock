@@ -45,6 +45,14 @@ source:
     # only an enrollment signal (the pre-pack container keys by the packed bytes),
     # so this costs nothing but a missed buffer reuse.
     - patches/0009-Disable-flaky-MatMulNBits-sharing-identity-test.patch
+    # onnxruntime_providers_tensorrt only exports GetProvider, so
+    # RegisterExecutionProviderLibrary (which needs CreateEpFactories/ReleaseEpFactory)
+    # refuses it and the library can only be found next to the onnxruntime binary.
+    # Give it the same OrtEpFactory the CUDA/NV/MIGraphX/OpenVINO bridge EPs have.
+    - patches/0010-Give-the-TensorRT-EP-an-OrtEpFactory.patch
+    # Let an EP registered from an absolute path ship the provider bridge libraries it
+    # depends on next to itself, instead of requiring them in Env::GetRuntimePath().
+    - patches/0011-Search-registered-EP-directories-for-provider-bridge-libraries.patch
 
 build:
   number: ${{ build_number }}
@@ -178,6 +186,132 @@ outputs:
             - build-ci/Release/_deps/microsoft_wil-src/LICENSE
 
   # ---------------------------------------------------------------------------
+  # TensorRT execution provider (CUDA 13.0 linux variants only).
+  #
+  # Upstream has no "TensorRT EP as plugin" mode -- not in 1.29.0, not on main. The
+  # only standalone form the TensorRT EP has is the older *provider bridge*: a shared
+  # library that resolves onnxruntime's internals at runtime via
+  # onnxruntime_providers_shared. Two things follow from that.
+  #
+  # First, the bridge is an unversioned internal C++ ABI (a ProviderHost vtable handed
+  # over by Provider_SetHost), not the negotiated C ABI the plugin EP API uses. So
+  # unlike onnxruntime-ep-cuda, which can declare `onnxruntime >=1.24.4`, this package
+  # is pinned to the exact version and build of the core it was compiled against.
+  #
+  # Second, the TensorRT EP has no CUDA allocator, data transfer or cast kernels of its
+  # own; it calls ProviderHost, which forwards to ProviderInfo_CUDA and dlopens
+  # onnxruntime_providers_cuda. This package therefore also ships a CUDA_MINIMAL
+  # onnxruntime_providers_cuda (upstream's own option for "a very minimal TRT build":
+  # no cuDNN, no cuBLAS, ~1.6 MB). That name collides with the CUDA EP *plugin* from
+  # onnxruntime-ep-cuda, which is not a provider bridge at all, so both libraries live
+  # in a private directory and patch 0011 teaches onnxruntime to search it.
+  #
+  # Register it explicitly, by absolute path -- from Python:
+  #
+  #     import os, sys, onnxruntime as ort
+  #     ort.register_execution_provider_library(
+  #         "TensorrtExecutionProvider",
+  #         os.path.join(sys.prefix, "lib", "onnxruntime-eps", "tensorrt",
+  #                      "libonnxruntime_providers_tensorrt.so"))
+  #     so = ort.SessionOptions()
+  #     so.add_provider_for_devices(
+  #         [d for d in ort.get_ep_devices() if d.ep_name == "TensorrtExecutionProvider"], {})
+  #
+  # or from C++ with Env::RegisterExecutionProviderLibrary. This is the same flow
+  # onnxruntime-ep-cuda uses, so GPU users get one mechanism for both EPs.
+  # ---------------------------------------------------------------------------
+  - package:
+      name: onnxruntime-ep-tensorrt
+    build:
+      skip:
+        - not cuda_enabled
+        # conda-forge's TensorRT 11.1 has CUDA 13 builds for both linux-64 and
+        # linux-aarch64 but only a CUDA 12 build for linux-64, so CUDA 13.0 is the one
+        # variant that covers the aarch64/SBSA case issue #199 asks about without a
+        # platform-specific skip. win-64 has the packages too and should follow.
+        - not linux
+        - cuda_compiler_version != "13.0"
+      number: ${{ build_number }}
+      string: h${{ hash }}_${{ build_number }}_${{ build_ext }}
+      script:
+        interpreter: nu
+        env:
+          cuda_compiler_version: ${{ cuda_compiler_version }}
+        file: build-ep-tensorrt.nu
+    requirements:
+      build:
+        - ${{ compiler('c') }}
+        - ${{ stdlib('c') }}
+        - ${{ compiler('cxx') }}
+        - ${{ compiler('cuda') }}
+        # The vendored protobuf 3.21 does not build with CMake 4
+        - cmake <4
+        - libprotobuf 3.21.*  # We need protoc for cross-compilation
+        - ninja
+        - nushell
+        - if: build_platform != target_platform
+          then:
+            - cuda-cudart-dev
+        - if: unix
+          then:
+            - patch
+          else:
+            - m2-patch
+      host:
+        - cuda-version ==${{ cuda_compiler_version }}
+        - cuda-cudart-dev
+        # TensorRT itself; libnvinfer-headers comes along and carries NvInfer.h,
+        # NvInferPlugin.h and NvOnnxParser.h. The -devel run_exports pin the matching
+        # runtime packages.
+        - libnvinfer-devel
+        # onnxruntime_USE_TENSORRT_BUILTIN_PARSER=ON links the shared libnvonnxparser
+        # instead of statically linking onnx-tensorrt's nvonnxparser_static.
+        - libnvonnxparser-devel
+        # Not linked, but dlopened by soname from CreateTensorRTCustomOpDomainList to
+        # register TensorRT's built-in plugins as custom ops ("Default plugins
+        # successfully loaded"). Listed here so its run_export pins the runtime package.
+        - libnvinfer-plugin-devel
+      run:
+        # avoid that people without GPUs needlessly download the TensorRT runtime
+        - __cuda
+      run_constraints:
+        # The provider bridge is an internal, unversioned C++ ABI: the ProviderHost
+        # vtable this library calls through is whatever the core was compiled with.
+        # There is no negotiation and no error on mismatch, so pin to the exact
+        # version. (An exact *build* pin would be better still, but the core is built
+        # in a different job of this same recipe.)
+        - onnxruntime ==${{ version }}
+        - onnxruntime-cpp ==${{ version }}
+    tests:
+      - package_contents:
+          files:
+            - lib/onnxruntime-eps/tensorrt/libonnxruntime_providers_tensorrt.so
+            # The CUDA provider bridge the TensorRT EP calls into via ProviderHost.
+            - lib/onnxruntime-eps/tensorrt/libonnxruntime_providers_cuda.so
+          strict: true
+    about:
+      license: MIT AND BSL-1.0
+      license_file:
+        - LICENSE
+        - build-ci/Release/_deps/abseil_cpp-src/LICENSE
+        - build-ci/Release/_deps/date-src/LICENSE.txt
+        # EIGEN_MPL2_ONLY=ON, so only MPL2-licensed Eigen code is compiled in
+        - build-ci/Release/_deps/eigen3-src/COPYING.MPL2
+        - build-ci/Release/_deps/flatbuffers-src/LICENSE
+        - build-ci/Release/_deps/gsl-src/LICENSE
+        - build-ci/Release/_deps/nlohmann_json-src/LICENSE.MIT
+        - build-ci/Release/_deps/onnx-src/LICENSE
+        - build-ci/Release/_deps/protobuf-src/LICENSE
+        - build-ci/Release/_deps/pytorch_cpuinfo-src/LICENSE
+        - build-ci/Release/_deps/re2-src/LICENSE
+        - build-ci/Release/_deps/safeint-src/LICENSE
+        - if: aarch64
+          then:
+            # KleidiAI kernels are vendored on ARM targets
+            - build-ci/Release/_deps/kleidiai-src/LICENSES/Apache-2.0.txt
+            - build-ci/Release/_deps/kleidiai-src/LICENSES/BSD-3-Clause.txt
+
+  # ---------------------------------------------------------------------------
   # C++ library (CPU-only). Standalone build via upstream's build.py driver:
   # no Python bindings, no unit tests (those run in the python builds of the
   # same source), nested upstream header layout as before.
@@ -234,6 +368,15 @@ outputs:
               then:
                 # The CoreML execution provider is built into onnxruntime on Apple Silicon.
                 - onnxruntime/core/providers/coreml/coreml_provider_factory.h
+          files:
+            # Required next to the onnxruntime binary by every provider bridge EP
+            # (e.g. onnxruntime-ep-tensorrt). Not built on macOS.
+            - if: linux
+              then:
+                - lib/libonnxruntime_providers_shared.so
+            - if: win
+              then:
+                - Library/bin/onnxruntime_providers_shared.dll
           lib:
             - if: unix
               then:

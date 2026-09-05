@@ -36,3 +36,8 @@ xcopy /E /I include\onnxruntime "%PREFIX%\Library\include\onnxruntime"
 xcopy /E /I install-ci\lib\cmake\onnxruntime "%PREFIX%\Library\lib\cmake\onnxruntime"
 xcopy /Y build-ci\Release\onnxruntime_conda.lib "%PREFIX%\Library\lib\"
 xcopy /Y build-ci\Release\onnxruntime_conda.dll "%PREFIX%\Library\bin\"
+
+:: onnxruntime_providers_shared is how any "provider bridge" execution provider reaches
+:: onnxruntime's internals: the core loads it and hands it the ProviderHost through
+:: Provider_SetHost. It is looked up next to the onnxruntime binary, so ship it here.
+xcopy /Y build-ci\Release\onnxruntime_providers_shared.dll "%PREFIX%\Library\bin\"

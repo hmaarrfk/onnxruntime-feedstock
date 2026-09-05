@@ -90,3 +90,13 @@ if [[ -n "${OSX_ARCH:+yes}" ]]; then
 else
     install build-ci/Release/libonnxruntime.so* "${PREFIX}/lib"
 fi
+
+# libonnxruntime_providers_shared is how any "provider bridge" execution provider
+# (the TensorRT EP, for one) reaches onnxruntime's internals: the core dlopens it and
+# hands it the ProviderHost through Provider_SetHost, and the EP library resolves its
+# undefined symbols against it. It is looked up next to the onnxruntime binary, so the
+# C++ package has to carry it -- the Python wheel already ships its own copy in capi/.
+# Not built on macOS (see onnxruntime_providers_cpu.cmake).
+if [[ -z "${OSX_ARCH:+yes}" ]]; then
+    install build-ci/Release/libonnxruntime_providers_shared.so "${PREFIX}/lib"
+fi
