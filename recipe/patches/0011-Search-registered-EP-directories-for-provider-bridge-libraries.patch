@@ -29,6 +29,11 @@ registers the directory of every EP library loaded from an absolute path, which 
 an out-of-tree EP ship the bridge libraries it depends on next to itself in a private
 directory. Nothing changes for an ordinary install, where the runtime path resolves
 first.
+
+A candidate is only accepted if it exports the symbol the caller needs
+(Provider_SetHost / GetProvider). That is not just an early sanity check: it is what
+stops a CUDA EP plugin occupying the onnxruntime_providers_cuda name in the runtime
+path from shadowing a usable bridge library in a registered directory.
 diff --git a/onnxruntime/core/session/provider_bridge_library.h b/onnxruntime/core/session/provider_bridge_library.h
 index a131e1e..92b4bbb 100644
 --- a/onnxruntime/core/session/provider_bridge_library.h
@@ -63,7 +68,7 @@ index a131e1e..92b4bbb 100644
    Default,
    Absolute,
 diff --git a/onnxruntime/core/session/provider_bridge_ort.cc b/onnxruntime/core/session/provider_bridge_ort.cc
-index c45d216..dd95728 100644
+index c45d216..fdae391 100644
 --- a/onnxruntime/core/session/provider_bridge_ort.cc
 +++ b/onnxruntime/core/session/provider_bridge_ort.cc
 @@ -4,8 +4,11 @@
@@ -78,7 +83,7 @@ index c45d216..dd95728 100644
  
  #include "core/common/inlined_containers.h"
  #include "core/common/path_string.h"
-@@ -1887,15 +1890,66 @@ struct ProviderHostImpl : ProviderHost {
+@@ -1887,15 +1890,92 @@ struct ProviderHostImpl : ProviderHost {
  #if defined(_MSC_VER) && !defined(__clang__)
  #pragma warning(pop)
  #endif
@@ -106,31 +111,57 @@ index c45d216..dd95728 100644
 +  }
 +}
 +
-+// Loads a provider bridge library by file name: the ORT runtime path first (the long-standing
-+// behaviour), then any directory registered with AddProviderLibrarySearchPath. On failure the
-+// error from the runtime path is returned, so the message keeps naming the expected location.
-+static Status LoadProviderLibraryByName(const PathString& filename, bool shared_globals, void** handle) {
-+  auto status = Env::Default().LoadDynamicLibrary(Env::Default().GetRuntimePath() + filename,
-+                                                  shared_globals, handle);
-+  if (status.IsOK()) {
-+    return status;
-+  }
-+
-+  std::vector<std::filesystem::path> paths;
++// Loads a provider bridge library by file name, looking in the ORT runtime path first (the
++// long-standing behaviour) and then in every directory registered with
++// AddProviderLibrarySearchPath.
++//
++// `required_symbol` must be exported by the library for a candidate to be accepted. This is not
++// just an early sanity check: a CUDA EP plugin (onnxruntime_BUILD_CUDA_EP_AS_PLUGIN=ON) installs
++// under the same onnxruntime_providers_cuda name as the provider bridge library but exports only
++// CreateEpFactories/ReleaseEpFactory. Without the check, such a file sitting in the runtime path
++// would shadow a usable bridge library in a registered directory.
++//
++// On failure the error from the runtime path is returned, so the message keeps naming the
++// expected location.
++static Status LoadProviderBridgeLibrary(const PathString& filename, const char* required_symbol,
++                                        bool shared_globals, void** handle) {
++  std::vector<PathString> candidates{Env::Default().GetRuntimePath() + filename};
 +  {
 +    std::lock_guard<std::mutex> lock{ProviderLibrarySearchPathsMutex()};
-+    paths = ProviderLibrarySearchPaths();
-+  }
-+
-+  for (const auto& directory : paths) {
-+    auto candidate = (directory / std::filesystem::path{filename}).native();
-+    if (Env::Default().LoadDynamicLibrary(candidate, shared_globals, handle).IsOK()) {
-+      LOGS_DEFAULT(INFO) << "Loaded provider bridge library from registered search path: " << candidate;
-+      return Status::OK();
++    for (const auto& directory : ProviderLibrarySearchPaths()) {
++      candidates.push_back((directory / std::filesystem::path{filename}).native());
 +    }
 +  }
 +
-+  return status;
++  Status first_error;
++  for (size_t i = 0; i < candidates.size(); ++i) {
++    void* candidate_handle = nullptr;
++    auto status = Env::Default().LoadDynamicLibrary(candidates[i], shared_globals, &candidate_handle);
++
++    if (status.IsOK()) {
++      void* symbol = nullptr;
++      status = Env::Default().GetSymbolFromLibrary(candidate_handle, required_symbol, &symbol);
++      if (status.IsOK()) {
++        if (i != 0) {
++          LOGS_DEFAULT(INFO) << "Loaded provider bridge library from a registered search path: "
++                             << PathToUTF8String(candidates[i]);
++        }
++        *handle = candidate_handle;
++        return Status::OK();
++      }
++
++      auto unload_status = Env::Default().UnloadDynamicLibrary(candidate_handle);
++      if (!unload_status.IsOK()) {
++        LOGS_DEFAULT(ERROR) << unload_status.ErrorMessage();
++      }
++    }
++
++    if (i == 0) {
++      first_error = status;
++    }
++  }
++
++  return first_error;
 +}
 +
  struct ProviderSharedLibrary {
@@ -142,19 +173,19 @@ index c45d216..dd95728 100644
 -    auto full_path = Env::Default().GetRuntimePath() +
 -                     PathString(LIBRARY_PREFIX ORT_TSTR("onnxruntime_providers_shared") LIBRARY_EXTENSION);
 -    ORT_RETURN_IF_ERROR(Env::Default().LoadDynamicLibrary(full_path, true /*shared_globals on unix*/, &handle_));
-+    ORT_RETURN_IF_ERROR(LoadProviderLibraryByName(
++    ORT_RETURN_IF_ERROR(LoadProviderBridgeLibrary(
 +        PathString(LIBRARY_PREFIX ORT_TSTR("onnxruntime_providers_shared") LIBRARY_EXTENSION),
-+        true /*shared_globals on unix*/, &handle_));
++        "Provider_SetHost", true /*shared_globals on unix*/, &handle_));
  
      void (*PProvider_SetHost)(void*);
      ORT_RETURN_IF_ERROR(Env::Default().GetSymbolFromLibrary(handle_, "Provider_SetHost", (void**)&PProvider_SetHost));
-@@ -1960,8 +2014,7 @@ Status ProviderLibrary::Load() {
+@@ -1960,8 +2040,7 @@ Status ProviderLibrary::Load() {
          }
          ORT_RETURN_IF_ERROR(Env::Default().LoadDynamicLibrary(filename_, false, &handle_));
        } else {
 -        auto full_path = Env::Default().GetRuntimePath() + filename_;
 -        ORT_RETURN_IF_ERROR(Env::Default().LoadDynamicLibrary(full_path, false, &handle_));
-+        ORT_RETURN_IF_ERROR(LoadProviderLibraryByName(PathString(filename_), false, &handle_));
++        ORT_RETURN_IF_ERROR(LoadProviderBridgeLibrary(PathString(filename_), "GetProvider", false, &handle_));
        }
  
        Provider* (*PGetProvider)();
