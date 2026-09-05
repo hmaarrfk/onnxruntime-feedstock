@@ -311,11 +311,12 @@ outputs:
         - build-ci/Release/_deps/pytorch_cpuinfo-src/LICENSE
         - build-ci/Release/_deps/re2-src/LICENSE
         - build-ci/Release/_deps/safeint-src/LICENSE
-        - if: aarch64
-          then:
-            # KleidiAI kernels are vendored on ARM targets
-            - build-ci/Release/_deps/kleidiai-src/LICENSES/Apache-2.0.txt
-            - build-ci/Release/_deps/kleidiai-src/LICENSES/BSD-3-Clause.txt
+        # NOTE: no KleidiAI entry here, unlike onnxruntime-ep-cuda. KleidiAI is a set
+        # of ARM CPU kernels for MLAS; the TensorRT EP does not link MLAS, so this
+        # build does not pass onnxruntime_USE_KLEIDIAI and _deps/kleidiai-src is never
+        # fetched. Listing it made rattler-build abort the whole license copy on
+        # linux-aarch64 ("No license files were copied"). This list is identical on
+        # linux-64 and linux-aarch64 - both vendor exactly these twelve.
 
   # ---------------------------------------------------------------------------
   # C++ library (CPU-only). Standalone build via upstream's build.py driver:
