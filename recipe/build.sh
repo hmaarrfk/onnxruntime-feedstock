@@ -18,6 +18,10 @@ else
     echo "Tests are enabled"
     RUN_TESTS_BUILD_PY_OPTIONS="--test"
     BUILD_UNIT_TESTS="ON"
+    # Skip the flaky QDQ MatMulNBits sharing-identity determinism
+    # assertion. It reads uninitialized memory upstream and fails
+    # intermittently on linux-64.
+    export GTEST_FILTER='-QDQTransformerTests.DefaultPath_TagsGeneratedWeightWithStableContentIdentity'
 fi
 
 if [[ "${target_platform:-other}" == 'osx-arm64' ]]; then

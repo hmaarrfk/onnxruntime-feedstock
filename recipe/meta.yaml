@@ -43,11 +43,6 @@ source:
     # build fails with "unresolved external symbol __delayLoadHelper2".
     # https://github.com/microsoft/onnxruntime/pull/31637
     - patches/0008-Link-delayimp.lib-for-onnxruntime_pybind11_state.patch      # [win]
-    # New 1.29.0 test asserting a fusion-generated sharing tag is stable across
-    # sessions; it reads uninitialized memory and fails intermittently. The tag is
-    # only an enrollment signal (the pre-pack container keys by the packed bytes),
-    # so this costs nothing but a missed buffer reuse.
-    - patches/0009-Disable-flaky-MatMulNBits-sharing-identity-test.patch
 
 build:
   number: {{ build }}
