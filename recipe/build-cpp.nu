@@ -184,7 +184,7 @@ if $build_unit_tests == "ON" {
 # Configured separately so that build-ci, which the other outputs reuse, stays
 # identical to a build without it: onnxruntime-ep-openvino ships only the plugin
 # library, built against conda-forge's OpenVINO.
-if ($env.openvino_enabled? | default "false") == "true" {
+if ($env.openvino_enabled? | default "false" | str lowercase) == "true" {
     let ov_build_py_args = ($build_py_args
         | where {|a| $a not-in ["--build_wheel" "--enable_lto"]}
         | each {|a| if $a == "build-ci" { "build-ov" } else { $a }})
